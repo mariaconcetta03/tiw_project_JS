@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
+
 import com.example.DAOs.UserDao;
 
 @WebServlet("/LoginServlet")
@@ -34,31 +37,30 @@ public class LoginServlet extends HttpServlet {
 	    }
 
 		// getting the parameters written by the user
-		String email = request.getParameter("email");
-		String password = request.getParameter("password");
-
-		response.setContentType("text/html");
+		String email = StringEscapeUtils.escapeJava(request.getParameter("email"));
+		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
+		//response.setContentType("text/plain");
 	
 		String errorMessage;
 		
 			List<Integer> value = userDao.checkCredentials(email, password);
 
 		if(value.get(0).equals(1)) { // connectionError = 1
-			errorMessage = "C'è stato un errore durante la comunicazione con il server SQL";
-			response.sendRedirect("login.html?error=" + java.net.URLEncoder.encode(errorMessage, "UTF-8"));
+			response.getWriter().println("C'è stato un errore durante la comunicazione con il server SQL");
 			return;
 		}
 		
 		if (value.get(1).equals(0)) { // wrongParam = 0
 			session = request.getSession();
 			session.setAttribute("email", email); // Salviamo l'email nella sessione, perchè è quella del PROPRIETARIO delle cartelle
-			// Se non ci sono errori, procediamo in home page
-			response.sendRedirect("http://localhost:8080/tiw_project/HomeServlet");
-		} else { // wrongParam = 1
-			// Reindirizza di nuovo alla pagina HTML con il messaggio di errore nella query string
-			errorMessage = "E-mail o password errate. Riprova.";
-			response.sendRedirect("login.html?error=" + java.net.URLEncoder.encode(errorMessage, "UTF-8"));
+  			response.setStatus(HttpServletResponse.SC_OK); // Status 200 OK
+            response.getWriter().println("Successo");	// scrive Successo nella risposta	
+            response.sendRedirect ("home_page.html");
+            } else { // wrongParam = 1
+			 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Status 401
+             response.getWriter().println("E-mail o password errate. Riprova.");
 		}
+
 
 	}
 

@@ -8,8 +8,5 @@
 		<servlet-name>RegistrationServlet</servlet-name>
 		<servlet-class>com.example.RegistrationServlet</servlet-class>
 	</servlet>
-	<servlet>
-		<servlet-name>LoginServlet</servlet-name>
-		<servlet-class>com.example.LoginServlet</servlet-class>
-	</servlet>
+
 </web-app>

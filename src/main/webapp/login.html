@@ -10,20 +10,21 @@
 
 <body> <!--username, pw-->
 <FORM
-        action = "LoginServlet"
-        method = "post" >
-
+		id="login-form"
+		method="post" 
+		action="LoginServlet">
+		
   <P>
     <b>E-mail:</b><br>
-    <INPUT type="email"  name = "email" required>
+    <INPUT type="email" id="email" name = "email" required>
   </P>
 
   <P>
     <b>Password:</b><br>
-    <INPUT type="password" name = "password" required>
+    <INPUT type="password" id="password" name = "password" required>
   </P>
 
-  <INPUT type = 'submit' VALUE = LOGIN>
+  <INPUT type = "submit" VALUE = LOGIN>
 
 
 
@@ -33,14 +34,10 @@
         <p id="errorMessage"></p>
     </div>
 
- 	<script>
-        // Estrae il parametro "error" dall'URL e, se presente, lo visualizza
-        const params = new URLSearchParams(window.location.search); // prendo tutti i parametri dell'URL
-        const errorMessage = params.get('error'); // prendo il parametro ERROR nell'url
-        if (errorMessage) {
-            document.getElementById('errorMessage').textContent = errorMessage; // setto il testo di "errorMessage in base a ciò che c'è nella query string
-        }
-    </script>
+
+  <!-- Collegamento al file JavaScript esterno -->
+  <script src="login.js"></script>
+  
 
 </FORM>
 </body>
