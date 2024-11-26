@@ -40,9 +40,9 @@ public class HomeServlet extends HttpServlet {
 		String user = null;
 		// Prendiamo la map dei token dalla sessione
 		Map<String, Integer> folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
-	    if (session != null) {
-	        	user = session.getAttribute("email").toString();
-	        }
+		if (session != null) {
+			user = session.getAttribute("email").toString();
+		}
 		// aggiungiamo il token della nuova cartella
 		String token = UUID.randomUUID().toString(); // Un token casuale o identificatore offuscato
 		folderTokens.put(token, f.getId());
@@ -52,9 +52,9 @@ public class HomeServlet extends HttpServlet {
 
 		out.println("<li class=\"folder\">" + f.getNome()); // creo la cartella più esterna
 		out.println("<input id=\"aggiungisottocartellabutton\" type=\"button\" value=\"AGGIUNGI SOTTOCARTELLA\"> "
-		+ "<link rel=\"stylesheet\" href=\"Home.css\">");
+				+ "<link rel=\"stylesheet\" href=\"Home.css\">");
 		out.println("<input id=\"aggiungifilebutton\" type=\"button\" value=\"AGGIUNGI FILE\"> "
-		+ "<link rel=\"stylesheet\" href=\"Home.css\">");
+				+ "<link rel=\"stylesheet\" href=\"Home.css\">");
 		// lista di files contenuti in questa cartella
 		List<File> files = documentoDao.getDocsFromFolder(user, f.getId());
 
@@ -64,10 +64,9 @@ public class HomeServlet extends HttpServlet {
 		for (File file : files) { // docs
 			String tokenf = UUID.randomUUID().toString(); // Un token casuale o identificatore offuscato
 
-			out.println("<li class=\"file\">" + file.getNome() + " <a href=\"AccediServlet?fileToken=" + token
-					+ "\">   Accedi</a>" + " <a href=\"SpostaServlet?fileToken=" + token + "\">   Sposta</a>"
-					+"</li>");
-					
+			out.println("<li class=\"file\">" + file.getNome() + "     "
+					+ "<input id=\"accedibutton\" type=\"button\" value=\"ACCEDI\">"
+					+ "<link rel=\"stylesheet\" href=\"Home.css\">" + "</li>");
 			fileTokens.put(tokenf, file.getId());
 		}
 		session.setAttribute("fileTokens", fileTokens);
@@ -98,128 +97,86 @@ public class HomeServlet extends HttpServlet {
 		Integer IDCartella = null;
 		Map<String, Integer> fileTokens = null;
 
-		// CASO SPOSTA
-		if (origin != null && origin.equals("SpostaServlet")) {
-			// tutte le robe che deve fare dopo sposta
-			session.setAttribute("originServlet", null);
-			// ricevo nome utente (email) dalla sessione e metto i foldertokens come
-			// attributi
-			if (session != null) {
-				user = session.getAttribute("email").toString();
-				fileTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
-			}
+		// CODICE PER GESTIONE PAGINE PRECEDENTI -----------------------------
+		// Ottieni la parte principale dell'URL
+		String currentPage = request.getRequestURL().toString();
 
-			// Connessione al database e recupero delle cartelle (vengono messe in
-			// allFolders)
-			allFolders = cartellaDao.getAllUserFolder(user);
-			String fileToMoveToken = request.getParameter("fileToken");
-			Integer idFileToMove = fileTokens.get(fileToMoveToken); // ottengo in questo modo id della cartella
-																	// associata
-
-			File f = documentoDao.findDocumentoByID(idFileToMove);
-			nomeFile = f.getNome();
-			IDCartella = f.getCartella();
-
-			nomeCartella = cartellaDao.getNomeCartellaById(IDCartella);
-
-			// Impostazione della risposta (pagina HTML)
-			response.setContentType("text/html");
-			PrintWriter out = response.getWriter();
-
-			out.println(
-					"<html lang=\"it\"><head><meta charset=\"UTF-8\"><title>Home Page</title><meta charset=\"UTF-8\">\r\n"
-							+ "<title>Home Page</title>\r\n"
-							+ "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n"
-							+ "<link rel=\"stylesheet\" href=\"ContenutiStyle.css\"></head><body>");
-
-			// Link per fare il logout (rimando alla servlet di logout)
-			out.println("<a href=\"LogoutServlet\">Logout</a>");
-			out.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"); // spaziatura
-
-			out.println("<h1>Stai spostando il documento \"" + nomeFile + "\" dalla cartella \"" + nomeCartella
-					+ "\".</h1>");
-			out.println("<h3>Scegli la cartella di destinazione.</h3>");
-			out.println("<div class=\"tree\">");
-			out.println("<ul>");
-
-			// Generazione ricorsiva del codice HTML
-			for (Folder folder1 : allFolders) {
-				generateHtmlForMovingFolder(out, folder1, session, IDCartella, fileToMoveToken);
-			}
-
-			// BLOCCATI
-
-			out.println("</ul>");
-			out.println("</div>");
-			out.println("</body></html>");
-
-			// CASO HOME PAGE NORMALE
-		} else {
-			// CODICE PER GESTIONE PAGINE PRECEDENTI -----------------------------
-			// Ottieni la parte principale dell'URL
-			String currentPage = request.getRequestURL().toString();
-
-			// Aggiungi la query string, se esiste
-			String queryString = request.getQueryString();
-			if (queryString != null) {
-				currentPage += "?" + queryString;
-			}
-
-			// Recupera o inizializza la cronologia nella sessione
-			LinkedList<String> history = (LinkedList<String>) session.getAttribute("pageHistory");
-			if (history == null) {
-				history = new LinkedList<>();
-			}
-
-			// Aggiungi la pagina corrente alla cronologia, evitando duplicati consecutivi
-			if (history.isEmpty() || !history.getLast().equals(currentPage)) {
-				history.add(currentPage);
-			}
-
-			// Salva la cronologia nella sessione
-			session.setAttribute("pageHistory", history);
-			// -------------------------------------------------------------------
-
-			// ricevo nome utente (email) dalla sessione e metto i foldertokens come
-			// attributi
-			if (session != null) {
-				user = session.getAttribute("email").toString();
-				session.setAttribute("folderTokens", folderTokens);
-			}
-
-			// Connessione al database e recupero delle cartelle (vengono messe in
-			// allFolders)
-			allFolders = cartellaDao.getAllUserFolder(user);
-
-			// Impostazione della risposta (pagina HTML)
-			response.setContentType("text/html");
-			PrintWriter out = response.getWriter();
-
-			out.println(
-					"<html lang=\"it\"><head><meta charset=\"UTF-8\"><title>Home Page</title><meta charset=\"UTF-8\">\r\n"
-							+ "<title>Home Page</title>\r\n"
-							+ "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n"
-							+ "<link rel=\"stylesheet\" href=\"ContenutiStyle.css\"></head><body>");
-
-			// Link per fare il logout (rimando alla servlet di logout)
-			out.println("<a href=\"LogoutServlet\">Logout</a>");
-			out.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"); // spaziatura
-			out.println("<a href=\"GestioneContenutiServlet\">Gestione contenuti</a>");
-
-			out.println("<h1>Le tue cartelle:</h1>");
-			out.println("<div class=\"tree\">");
-			out.println("<ul>");
-
-			// Generazione ricorsiva del codice HTML
-			for (Folder folder1 : allFolders) {
-				generateHtmlForFolder(out, folder1, session);
-			}
-
-			out.println("</ul>");
-			out.println("</div>");
-			out.println("</body></html>");
-
+		// Aggiungi la query string, se esiste
+		String queryString = request.getQueryString();
+		if (queryString != null) {
+			currentPage += "?" + queryString;
 		}
+
+		// Recupera o inizializza la cronologia nella sessione
+		LinkedList<String> history = (LinkedList<String>) session.getAttribute("pageHistory");
+		if (history == null) {
+			history = new LinkedList<>();
+		}
+
+		// Aggiungi la pagina corrente alla cronologia, evitando duplicati consecutivi
+		if (history.isEmpty() || !history.getLast().equals(currentPage)) {
+			history.add(currentPage);
+		}
+
+		// Salva la cronologia nella sessione
+		session.setAttribute("pageHistory", history);
+		// -------------------------------------------------------------------
+
+		// ricevo nome utente (email) dalla sessione e metto i foldertokens come
+		// attributi
+		if (session != null) {
+			user = session.getAttribute("email").toString();
+			session.setAttribute("folderTokens", folderTokens);
+		}
+
+		// Connessione al database e recupero delle cartelle (vengono messe in
+		// allFolders)
+		allFolders = cartellaDao.getAllUserFolder(user);
+
+		// Impostazione della risposta (pagina HTML)
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+
+		out.println(
+				"<html lang=\"it\"><head><meta charset=\"UTF-8\"><title>Home Page</title><meta charset=\"UTF-8\">\r\n"
+						+ "<title>Home Page</title>\r\n"
+						+ "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n"
+						+ "<link rel=\"stylesheet\" href=\"ContenutiStyle.css\"></head><body>");
+
+		// Link per fare il logout (rimando alla servlet di logout)
+		out.println("<a href=\"LogoutServlet\">Logout</a>");
+		out.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"); // spaziatura
+		out.println("<a href=\"GestioneContenutiServlet\">Nuova cartella nella ROOT</a>");
+
+		out.println("<h1>Le tue cartelle:</h1>");
+		out.println("<div class=\"tree\">");
+		out.println("<ul>");
+
+		// Generazione ricorsiva del codice HTML
+		for (Folder folder1 : allFolders) {
+			generateHtmlForFolder(out, folder1, session);
+		}
+
+		out.println("</ul>");
+		out.println("</div>");
+		
+		// separazione delle parti
+		out.println("<br>");
+		out.println("<br>");
+		out.println("<br>");
+
+
+		// qui creo uno spazio per mostrare i dettagli del file selezionato
+		// SPAN: utilizzato con lo scopo di raggruppare parti di testo o elementi HTML con lo scopo di applicare stili CSS o manipolazioni JavaScript
+		out.println("<h2> Informazioni del documento selezionato: </h2>");
+		out.println("<b>Nome documento:</b> <span id=\"nomedocumento\"></span><br>");
+		out.println("<b>E-mail del proprietario:</b> <span id=\"email\"></span><br>");
+		out.println("<b>Data di creazione:</b> <span id=\"data\"></span><br>");
+		out.println("<b>Sommario:</b> <span id=\"sommario\"></span><br>");
+		out.println("<b>Tipo:</b> <span id=\"tipo\"></span><br>");
+		out.println("<b>Cartella:</b> <span id=\"nomecartella\"></span><br>");
+
+		out.println("</body></html>");
 
 	}
 
