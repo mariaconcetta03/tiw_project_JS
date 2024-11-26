@@ -39,6 +39,7 @@ public class LoginServlet extends HttpServlet {
 		// getting the parameters written by the user
 		String email = StringEscapeUtils.escapeJava(request.getParameter("email"));
 		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
+		// response.setContentType("text/plain");
 
 		List<Integer> value = userDao.checkCredentials(email, password);
 
