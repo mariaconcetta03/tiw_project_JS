@@ -3,42 +3,42 @@
 
 
 <head>
-  <meta charset="UTF-8">
-  <title>Login utente</title>
+<meta charset="ISO-8859-1">
+<title>Login utente</title>
+<!-- Collegamento al file JavaScript esterno -->
+<script src="loginManager.js" charset="utf-8" defer></script>
+
+
 </head>
 
 
-<body> <!--username, pw-->
-<FORM
-		id="login-form"
-		method="post" 
-		action="LoginServlet">
-		
-  <P>
-    <b>E-mail:</b><br>
-    <INPUT type="email" id="email" name = "email" required>
-  </P>
-
-  <P>
-    <b>Password:</b><br>
-    <INPUT type="password" id="password" name = "password" required>
-  </P>
-
-  <INPUT type = "submit" VALUE = LOGIN>
+<body>
+	<!--username, pw-->
 
 
+	<form action="#">
+		<!-- Il cancelletto # si utilizza quando si vuole prevenire l'invio automatico del form, e quando si vuole gestire l'invio -->
+		<!-- dei dati autonomamente con javascript (nel nostro caso utilizzeremo la funzione MAKECALL) -->
 
-    <!-- Messaggio di errore -->
-    <div style="color: red;">
-        <!-- Qui verrà visualizzato il messaggio di errore -->
-        <p id="errorMessage"></p>
-    </div>
+		<P>
+			<b>E-mail:</b><br> <INPUT type="email" name="email" required>
+		</P>
+
+		<P>
+			<b>Password:</b><br> <INPUT type="password" name="password"
+				required>
+		</P>
+
+		<input id="loginbutton" type="button" value=LOGIN>
 
 
-  <!-- Collegamento al file JavaScript esterno -->
-  <script src="login.js"></script>
-  
+		<!-- 		Qui mettiamo error message, che viene modificato dinamicamente dal file loginManager.js -->
+		<div style="color: red;">
+			<p id="errormessage"></p>
+		</div>
 
-</FORM>
+	</form>
+
+
 </body>
 </html>
