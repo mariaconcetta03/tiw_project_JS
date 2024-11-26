@@ -40,9 +40,9 @@ public class HomeServlet extends HttpServlet {
 		String user = null;
 		// Prendiamo la map dei token dalla sessione
 		Map<String, Integer> folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
-		if (session != null) {
-			user = session.getAttribute("email").toString();
-		}
+	    if (session != null) {
+	        	user = session.getAttribute("email").toString();
+	        }
 		// aggiungiamo il token della nuova cartella
 		String token = UUID.randomUUID().toString(); // Un token casuale o identificatore offuscato
 		folderTokens.put(token, f.getId());
@@ -50,10 +50,11 @@ public class HomeServlet extends HttpServlet {
 		// aggiorniamo i token della sessione
 		session.setAttribute("folderTokens", folderTokens);
 
-		out.println("<li class=\"folder\"> <a href='ContenutiServlet?folderToken=" + token + "'>" + f.getNome()
-				+ "</a><br>"); // creo la cartella più
-		// esterna
-
+		out.println("<li class=\"folder\">" + f.getNome()); // creo la cartella più esterna
+		out.println("<input id=\"aggiungisottocartellabutton\" type=\"button\" value=\"AGGIUNGI SOTTOCARTELLA\"> "
+		+ "<link rel=\"stylesheet\" href=\"Home.css\">");
+		out.println("<input id=\"aggiungifilebutton\" type=\"button\" value=\"AGGIUNGI FILE\"> "
+		+ "<link rel=\"stylesheet\" href=\"Home.css\">");
 		// lista di files contenuti in questa cartella
 		List<File> files = documentoDao.getDocsFromFolder(user, f.getId());
 
@@ -65,7 +66,8 @@ public class HomeServlet extends HttpServlet {
 
 			out.println("<li class=\"file\">" + file.getNome() + " <a href=\"AccediServlet?fileToken=" + token
 					+ "\">   Accedi</a>" + " <a href=\"SpostaServlet?fileToken=" + token + "\">   Sposta</a>"
-					+ "</li>");
+					+"</li>");
+					
 			fileTokens.put(tokenf, file.getId());
 		}
 		session.setAttribute("fileTokens", fileTokens);
