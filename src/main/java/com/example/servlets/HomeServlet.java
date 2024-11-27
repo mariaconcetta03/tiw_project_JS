@@ -1,6 +1,33 @@
 package com.example.servlets;
 
 import java.io.IOException;
+
+
+
+
+
+/*
+			------------------  # TODO  --------------------
+			1. Creare le funzionalità per aggiungi file e 
+				aggiungi sottocartella
+				
+			2. Creare il cestino con drag and drop. Attenzione
+				poichè è possibile cancellare sia singoli file
+				sia intere cartelle (cancellazione a cascata).
+				Prima di inviare il comando di cancellazione 
+				al server l’utente vede una 
+				finestra modale di conferma e può decidere se 
+				annullare l’operazione o procedere.
+				
+			3. Errori lato server devono essere comunicati
+				attraverso messaggi di errori nella pagina
+				
+			4. Se in tempo tasto close per info dei documenti
+			
+			5. Modificare inserimento dati documenti (accedi)
+*/
+
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -40,6 +67,7 @@ public class HomeServlet extends HttpServlet {
 		String user = null;
 		// Prendiamo la map dei token dalla sessione
 		Map<String, Integer> folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
+	
 		if (session != null) {
 			user = session.getAttribute("email").toString();
 		}
@@ -60,12 +88,12 @@ public class HomeServlet extends HttpServlet {
 
 		out.println("<ul>"); // inizia la lista non ordinata
 		// stampo i files in una cartella
-		Map<String, Integer> fileTokens = new HashMap<>();
+		Map<String, Integer> fileTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
 		for (File file : files) { // docs
 			String tokenf = UUID.randomUUID().toString(); // Un token casuale o identificatore offuscato
 
 			out.println("<li class=\"file\">" + file.getNome() + "     "
-					+ "<input id=\"accedibutton\" type=\"button\" value=\"ACCEDI\">"
+					+ "<input id = \"accedibutton\" type=\"button\" class=\"accedi\" value=\"ACCEDI\" data-tokenf=\""+ tokenf +"\">"
 					+ "<link rel=\"stylesheet\" href=\"Home.css\">" + "</li>");
 			fileTokens.put(tokenf, file.getId());
 		}
@@ -95,38 +123,15 @@ public class HomeServlet extends HttpServlet {
 													// non esista restituisce null)
 		String origin = (String) session.getAttribute("originServlet");
 		Integer IDCartella = null;
-		Map<String, Integer> fileTokens = null;
+		Map<String, Integer> fileTokens = new HashMap<>();
 
-		// CODICE PER GESTIONE PAGINE PRECEDENTI -----------------------------
-		// Ottieni la parte principale dell'URL
-		String currentPage = request.getRequestURL().toString();
-
-		// Aggiungi la query string, se esiste
-		String queryString = request.getQueryString();
-		if (queryString != null) {
-			currentPage += "?" + queryString;
-		}
-
-		// Recupera o inizializza la cronologia nella sessione
-		LinkedList<String> history = (LinkedList<String>) session.getAttribute("pageHistory");
-		if (history == null) {
-			history = new LinkedList<>();
-		}
-
-		// Aggiungi la pagina corrente alla cronologia, evitando duplicati consecutivi
-		if (history.isEmpty() || !history.getLast().equals(currentPage)) {
-			history.add(currentPage);
-		}
-
-		// Salva la cronologia nella sessione
-		session.setAttribute("pageHistory", history);
-		// -------------------------------------------------------------------
 
 		// ricevo nome utente (email) dalla sessione e metto i foldertokens come
 		// attributi
 		if (session != null) {
 			user = session.getAttribute("email").toString();
 			session.setAttribute("folderTokens", folderTokens);
+			session.setAttribute("fileTokens", fileTokens);
 		}
 
 		// Connessione al database e recupero delle cartelle (vengono messe in
@@ -141,7 +146,9 @@ public class HomeServlet extends HttpServlet {
 				"<html lang=\"it\"><head><meta charset=\"UTF-8\"><title>Home Page</title><meta charset=\"UTF-8\">\r\n"
 						+ "<title>Home Page</title>\r\n"
 						+ "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n"
-						+ "<link rel=\"stylesheet\" href=\"ContenutiStyle.css\"></head><body>");
+						+ "<link rel=\"stylesheet\" href=\"ContenutiStyle.css\"><script src=\"homeManager.js\"></script></head><body>");
+	
+
 
 		// Link per fare il logout (rimando alla servlet di logout)
 		out.println("<a href=\"LogoutServlet\">Logout</a>");
@@ -151,7 +158,8 @@ public class HomeServlet extends HttpServlet {
 		out.println("<h1>Le tue cartelle:</h1>");
 		out.println("<div class=\"tree\">");
 		out.println("<ul>");
-
+		
+		
 		// Generazione ricorsiva del codice HTML
 		for (Folder folder1 : allFolders) {
 			generateHtmlForFolder(out, folder1, session);

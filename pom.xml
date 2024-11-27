@@ -27,6 +27,13 @@
     <artifactId>commons-lang</artifactId>
     <version>2.6</version>
 </dependency>
+
+
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.10.1</version> <!-- Sostituisci con la versione più recente -->
+</dependency>
   </dependencies>
   
   <properties>
