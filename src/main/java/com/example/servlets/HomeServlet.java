@@ -2,7 +2,20 @@ package com.example.servlets;
 
 import java.io.IOException;
 
+/*
+------------------  FUNZIONAMENTO DEL CESTINO  --------------------
+	
+1. Quando l'utente traina un file -> elimino il file
 
+2. Quando l'utente trascina una cartella, allora vengono eliminati
+	automaticamente tutti i files contenuti in quella cartella, grazie
+	alle foreign keys e agli attributi ON DELETE, ON UPDATE (cascade).
+	Successivamente si attiva anche un altra procedura simile, legata
+	ad una foreign key, che in realtà è però interna (sopracartella
+	references ID). Quando viene eliminato un ID, allora a cascata
+	elimino anche tutti gli altri.
+--------------------------------------------------------------------
+*/
 
 
 
@@ -21,8 +34,7 @@ import java.io.IOException;
 				attraverso messaggi di errori nella pagina
 				
 			4. Se in tempo tasto close per info dei documenti
-			
-			5. Genera cartella nella ROOT
+		
 			
 */
 
@@ -77,7 +89,7 @@ public class HomeServlet extends HttpServlet {
 		// aggiorniamo i token della sessione
 		session.setAttribute("folderTokens", folderTokens);
 
-		out.println("<li class=\"folder\">" + f.getNome()); // creo la cartella più esterna
+		out.println("<li class=\"folder\" draggable=\"true\" data-token=\"" + token+ "\">" + f.getNome()); // creo la cartella più esterna
 		out.println("<input id=\"aggiungisottocartellabutton\" class =\"addsubfolder\" type=\"button\" value=\"AGGIUNGI SOTTOCARTELLA\" data-token=\""+ token+"\">"
 				+ "<link rel=\"stylesheet\" href=\"Home.css\">");
 		out.println("<input id=\"aggiungifilebutton\" class =\"addfile\" type=\"button\" value=\"AGGIUNGI FILE\" data-token=\""+ token +"\">"
@@ -91,7 +103,7 @@ public class HomeServlet extends HttpServlet {
 		for (File file : files) { // docs
 			String tokenf = UUID.randomUUID().toString(); // Un token casuale o identificatore offuscato
 
-			out.println("<li class=\"file\">" + file.getNome() + "     "
+			out.println("<li class=\"file\" draggable=\"true\" data-token=\"" + token+ "\">" + file.getNome() + "     "
 					+ "<input id = \"accedibutton\" type=\"button\" class=\"accedi\" value=\"ACCEDI\" data-tokenf=\""+ tokenf +"\">"
 					+ "<link rel=\"stylesheet\" href=\"Home.css\">" + "</li>");
 			fileTokens.put(tokenf, file.getId());
@@ -139,6 +151,8 @@ public class HomeServlet extends HttpServlet {
 
 		// Impostazione della risposta (pagina HTML)
 		response.setContentType("text/html");
+		response.setCharacterEncoding("UTF-8");
+
 		PrintWriter out = response.getWriter();
 
 		out.println(
@@ -152,7 +166,8 @@ public class HomeServlet extends HttpServlet {
 		// Link per fare il logout (rimando alla servlet di logout)
 		out.println("<a href=\"LogoutServlet\">Logout</a>");
 		out.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"); // spaziatura
-		out.println("<a href=\"GestioneContenutiServlet\">Nuova cartella nella ROOT</a>");
+		out.println("<input class =\"addrootfolder\" type=\"button\" value=\"NUOVA CARTELLA ROOT\"");
+		out.println("<link rel=\"stylesheet\" href=\"Home.css\">");
 
 		out.println("<h1>Le tue cartelle:</h1>");
 		out.println("<div class=\"tree\">");
@@ -166,6 +181,13 @@ public class HomeServlet extends HttpServlet {
 
 		out.println("</ul>");
 		out.println("</div>");
+		out.println("<br>");
+		
+		out.println("<div id=\"dropzone\" class=\"dropzone\">");
+		out.println("<span style='font-size: 25px;'>🗑</span> CESTINO (trascina per eliminare)");
+		out.println("</div>");
+
+		
 		
 		// separazione delle parti
 		out.println("<br>");

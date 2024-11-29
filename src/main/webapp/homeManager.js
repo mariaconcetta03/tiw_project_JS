@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() { // ci assicuriamo che
 			makeCall("GET", 'AccediServlet?fileToken=' + token,
 				function(x) {
 					if (x.readyState == XMLHttpRequest.DONE) {
-						// Una volta ricevuta la risposta testuale da LoginServlet
 						if (x.status === 200) { // OK
 							// Convertiamo la risposta JSON in un oggetto JavaScript
 							console.log(x.responseText); // Debug della risposta
@@ -117,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
 				makeCall("POST", 'NewSubfolderServlet?folderToken=' + token + '&nome=' + nomeSottocartella,
 					function(x) {
 						if (x.readyState == XMLHttpRequest.DONE) {
-							// Una volta ricevuta la risposta testuale da LoginServlet
 							if (x.status === 200) { // OK
 								console.log('Cartella creata correttamente');
 							}
@@ -213,7 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
 				makeCall("POST", 'NewFileServlet?folderToken=' + token + '&nome=' + nomeFile + '&sommario=' + sommarioFile + '&tipo=' + tipoFile,
 					function(x) {
 						if (x.readyState == XMLHttpRequest.DONE) {
-							// Una volta ricevuta la risposta testuale da LoginServlet
 							if (x.status === 200) { // OK
 								console.log('File creato correttamente');
 							}
@@ -235,3 +232,129 @@ document.addEventListener('DOMContentLoaded', function() {
 	});
 });
 
+
+
+
+/** ------------------------ **/
+//adding a root folder
+
+
+document.addEventListener('DOMContentLoaded', function() {
+	// Trova tutti i bottoni "AGGIUNGI FILE"
+	document.querySelectorAll('.addrootfolder').forEach(button => {
+		button.addEventListener('click', function() {
+
+			// Se il campo di input esiste già, non fare nulla
+			const formBox = document.getElementById('form-box1');
+			// Controlla se il form box contiene già elementi
+			if (formBox && formBox.children.length > 0) {
+				return; // Esci se il form box contiene elementi
+			}
+
+			// Prendo i contenitori dall'HTML
+			const contenitore1 = document.getElementById('form-box1');
+			const contenitore2 = document.getElementById('form-box2');
+
+
+			const input1 = document.createElement('input');
+			input1.type = 'text';
+			input1.placeholder = 'Nome cartella ROOT';
+
+			// Crea un pulsante per confermare l'aggiunta della cartella
+			const confermaButton = document.createElement('button');
+			confermaButton.textContent = 'CREA';
+
+			// Aggiungi l'input e il pulsante nel FORM BOX sotto
+			contenitore1.appendChild(input1);
+			contenitore2.appendChild(confermaButton);
+
+
+			// Event listener per il pulsante di conferma
+			confermaButton.addEventListener('click', () => {
+				const nomeFolder = input1.value.trim(); // prendo il nome inserito dall'utente
+				
+				// se l'utente non inserisce un nome
+				if (nomeFolder === '') {
+					alert('Inserisci un nome valido per la cartella!');
+					return;
+				} 
+
+
+				makeCall("POST", 'NewRootFolderServlet?nomeCartella=' + nomeFolder,
+					function(x) {
+						if (x.readyState == XMLHttpRequest.DONE) {
+							if (x.status === 200) { // OK
+								console.log('Cartella root creata correttamente');
+							}
+						}
+					}
+				);
+
+
+				// Rimuovi il campo di input e il bottone di conferma
+				input1.remove();
+				confermaButton.remove();
+
+				location.reload(); //per ricaricare la pagina
+
+			});
+		});
+	});
+});
+
+
+
+
+
+
+
+
+// Recupero tutti gli elementi trascinabili
+document.addEventListener('DOMContentLoaded', function () {
+    const draggableItems = document.querySelectorAll('.file, .folder'); // File e cartelle
+    const dropzone = document.getElementById('dropzone'); // Zona cestino
+
+    // Configuro ogni elemento trascinabile
+    draggableItems.forEach(item => {
+        item.addEventListener('dragstart', dragStart);
+        item.addEventListener('dragend', dragEnd);
+    });
+
+    // Configuro la dropzone
+    dropzone.addEventListener('dragover', event => {
+        event.preventDefault(); // Necessario per consentire il drop
+        dropzone.classList.add('drag-over'); // Evidenzia la dropzone
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('drag-over'); // Rimuove l'evidenziazione
+    });
+
+    dropzone.addEventListener('drop', event => {
+        event.preventDefault(); // Impedisce il comportamento predefinito
+        dropzone.classList.remove('drag-over'); // Rimuove l'evidenziazione
+
+        const token = event.dataTransfer.getData('token'); // Recupera il token del file o della cartella
+        if (token) {
+            const elementoTrascinato = document.querySelector(`[data-token="${token}"]`);
+            if (elementoTrascinato) {
+                alert(`Hai eliminato: ${elementoTrascinato.textContent}`);
+                elementoTrascinato.remove(); // Elimina l'elemento dall'interfaccia
+            }
+        }
+    });
+
+    // Funzione: Quando inizia il drag
+    function dragStart(event) {
+        const token = event.target.getAttribute('data-token'); // Recupera il token
+        event.dataTransfer.setData('token', token); // Salva il token nel dataTransfer
+        event.target.classList.add('dragging'); // Aggiunge un feedback visivo
+        console.log(`Drag iniziato per token: ${token}`);
+    }
+
+    // Funzione: Quando termina il drag
+    function dragEnd(event) {
+        event.target.classList.remove('dragging'); // Rimuove il feedback visivo
+        console.log('Drag terminato');
+    }
+});
