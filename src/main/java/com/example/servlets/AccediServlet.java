@@ -51,6 +51,7 @@ public class AccediServlet extends HttpServlet {
 		    Date data = null;
 		    String sommario = null;
 		    String tipo = null;
+		    String nomedocumento = null;
 
 		HttpSession session = request.getSession(); // false -> check se sessione esiste oppure no (nel caso in cui
 													// non esista restituisce null)
@@ -78,13 +79,15 @@ public class AccediServlet extends HttpServlet {
 	    data = f.getData_creazione();
 	    sommario = f.getSommario();
 	    tipo = f.getTipo();
+	    nomedocumento = f.getNome();
 	    
 	    
 	 // Creare un oggetto JSON
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dataFormattata = dateFormat.format(data); // devo convertire la data come stringa altrimenti non posso metterla nei file JSON
         
 	    JsonObject jsonResponse = new JsonObject();
+	    jsonResponse.addProperty("nomedocumento", nomedocumento);
 	    jsonResponse.addProperty("nomecartella", nomecartella);
 	    jsonResponse.addProperty("email", email);
 	    jsonResponse.addProperty("data", dataFormattata); // sarà da riconvertire come data

@@ -1,21 +1,26 @@
+#aggiungisottocartellabutton {
+	width: 155px; /* Larghezza */
+	height: 16px; /* Altezza */
+	font-size: 10px; /* Dimensione del testo */
+}
 
-  #aggiungisottocartellabutton {
-    width: 155px; /* Larghezza */
-    height: 16px; /* Altezza */
-    font-size: 10px; /* Dimensione del testo */
-  }
+#aggiungifilebutton {
+	width: 93px; /* Larghezza */
+	height: 16px; /* Altezza */
+	font-size: 10px; /* Dimensione del testo */
+}
 
-  
-  #aggiungifilebutton{
-    width: 93px; /* Larghezza */
-    height: 16px; /* Altezza */
-    font-size: 10px; /* Dimensione del testo */
-  }
+#accedibutton {
+	width: 57px; /* Larghezza */
+	height: 16px; /* Altezza */
+	font-size: 10px; /* Dimensione del testo */
+}
 
-  
-    #accedibutton{
-     width: 57px; /* Larghezza */
-    height: 16px; /* Altezza */
-    font-size: 10px; /* Dimensione del testo */
-  }
-  
+
+
+
+#form-box  {
+    display: block; /* Ogni elemento occupa una riga */
+    margin-bottom: 10px; /* Spazio tra gli elementi */
+    width: 100%; /* (Facoltativo) Per farli occupare tutta la larghezza */
+}

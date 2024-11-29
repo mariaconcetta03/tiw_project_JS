@@ -8,8 +8,6 @@ import java.io.IOException;
 
 /*
 			------------------  # TODO  --------------------
-			1. Creare le funzionalità per aggiungi file e 
-				aggiungi sottocartella
 				
 			2. Creare il cestino con drag and drop. Attenzione
 				poichè è possibile cancellare sia singoli file
@@ -24,7 +22,8 @@ import java.io.IOException;
 				
 			4. Se in tempo tasto close per info dei documenti
 			
-			5. Modificare inserimento dati documenti (accedi)
+			5. Genera cartella nella ROOT
+			
 */
 
 
@@ -79,9 +78,9 @@ public class HomeServlet extends HttpServlet {
 		session.setAttribute("folderTokens", folderTokens);
 
 		out.println("<li class=\"folder\">" + f.getNome()); // creo la cartella più esterna
-		out.println("<input id=\"aggiungisottocartellabutton\" type=\"button\" value=\"AGGIUNGI SOTTOCARTELLA\"> "
+		out.println("<input id=\"aggiungisottocartellabutton\" class =\"addsubfolder\" type=\"button\" value=\"AGGIUNGI SOTTOCARTELLA\" data-token=\""+ token+"\">"
 				+ "<link rel=\"stylesheet\" href=\"Home.css\">");
-		out.println("<input id=\"aggiungifilebutton\" type=\"button\" value=\"AGGIUNGI FILE\"> "
+		out.println("<input id=\"aggiungifilebutton\" class =\"addfile\" type=\"button\" value=\"AGGIUNGI FILE\" data-token=\""+ token +"\">"
 				+ "<link rel=\"stylesheet\" href=\"Home.css\">");
 		// lista di files contenuti in questa cartella
 		List<File> files = documentoDao.getDocsFromFolder(user, f.getId());
@@ -146,7 +145,7 @@ public class HomeServlet extends HttpServlet {
 				"<html lang=\"it\"><head><meta charset=\"UTF-8\"><title>Home Page</title><meta charset=\"UTF-8\">\r\n"
 						+ "<title>Home Page</title>\r\n"
 						+ "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n"
-						+ "<link rel=\"stylesheet\" href=\"ContenutiStyle.css\"><script src=\"homeManager.js\"></script></head><body>");
+						+ "<link rel=\"stylesheet\" href=\"ContenutiStyle.css\"><link rel=\"stylesheet\" href=\"Home.css\"><script src=\"homeManager.js\"></script></head><body>");
 	
 
 
@@ -183,7 +182,19 @@ public class HomeServlet extends HttpServlet {
 		out.println("<b>Sommario:</b> <span id=\"sommario\"></span><br>");
 		out.println("<b>Tipo:</b> <span id=\"tipo\"></span><br>");
 		out.println("<b>Cartella:</b> <span id=\"nomecartella\"></span><br>");
-
+		
+		
+		out.println("<br><br><br><br>");
+		out.println("<div id=\"form-box1\">");
+		out.println("</div>");
+		out.println("<div id=\"form-box2\">");
+		out.println("</div>");
+		out.println("<div id=\"form-box3\">");
+		out.println("</div>");
+		out.println("<div id=\"form-box4\">");
+		out.println("</div>");
+	
+		
 		out.println("</body></html>");
 
 	}
