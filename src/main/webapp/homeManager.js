@@ -556,7 +556,8 @@ function setupDraggableItems() {
 				const elementoTrascinato = document.querySelector(`[data-token="${token}"]`); // ${nome_variabile}
 				if (elementoTrascinato) {
 					// Mostriamo la finestra di dialogo con opzioni
-					const conferma = confirm(`Stai eliminando: \n${elementoTrascinato.textContent.replace(/\s+/g, "\n").trim()} \nSei sicuro di voler proseguire?`);
+				
+					const conferma = confirm(`Stai eliminando: \n${elementoTrascinato.textContent.split('\n').map(line => line.trim()).filter(line => line !== "").join("\n")} \nSei sicuro di voler proseguire?`);
 					// s = Questo identifica una sequenza di uno o più caratteri di spazi vuoti, inclusi: Spazi ( ) Tabulazioni (\t) Nuove righe (\n)
 					// g = significa sostituzione GLOBALE (in tutto il testo)
 					// trim = elimina spazi, tabulazioni, a capo all'INIZIO
