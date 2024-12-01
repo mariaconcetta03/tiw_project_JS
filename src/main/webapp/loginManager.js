@@ -45,8 +45,8 @@
 
 function makeCall(method, url, formElement, cback, reset = true) {
 	var req = new XMLHttpRequest(); // creo una nuova richiesta HTTP
-	
-	
+
+
 	// questa funzione chiama CALLBACK quando lo stato della richiesta cambia
 	// ASSOCIO UN EVENTO AL CAMBIAMENTO DI STATO
 	req.onreadystatechange = function() {

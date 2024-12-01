@@ -14,9 +14,6 @@ document.addEventListener('DOMContentLoaded', function() { // ci assicuriamo che
 			const token = this.getAttribute('data-tokenf');
 			console.log("Token:", token); // Verifica che il token venga letto
 
-			// Memorizza il token nella sessione
-			// sessionStorage.setItem('fileToken', token);
-
 			// Effettua una chiamata GET usando la funzione makeCall
 			makeCall("GET", 'AccediServlet?fileToken=' + token,
 				function(x) {
@@ -34,7 +31,8 @@ document.addEventListener('DOMContentLoaded', function() { // ci assicuriamo che
 
 
 						} else {
-							console.error("Something went wrong.");
+							alert("C'è stato un errore del server durante il reperimento dei dati del file");
+							return;
 						}
 					}
 				}
@@ -61,6 +59,55 @@ function makeCall(method, url, cback, reset = true) {
 	req.send(); // invia  la richiesta
 
 }
+
+
+/* CHIUDI BOTTONE PER FILE */
+document.addEventListener('DOMContentLoaded', function() { // ci assicuriamo che questo file javascript venga caricato
+	// solamente quando l'HTML è caricato (DOM)
+
+	// Prendo tutti gli elementi accedibutton e ci aggiungo un event listener
+	document.querySelectorAll('#clearbutton').forEach(button => {
+		console.log("Pulsante trovato:", button); // Verifica che i pulsanti vengano rilevati
+
+		button.addEventListener('click', function() {
+			console.log("Pulsante cliccato:", this); // Verifica che il clic venga registrato
+
+							document.getElementById("nomedocumento").textContent = "";
+							document.getElementById("email").textContent = "";
+							document.getElementById("data").textContent = "";
+							document.getElementById("sommario").textContent = "";
+							document.getElementById("tipo").textContent = "";
+							document.getElementById("nomecartella").textContent = "";
+					}
+			);
+		});
+	});
+
+
+
+
+
+function makeCall(method, url, cback, reset = true) {
+	var req = new XMLHttpRequest(); // creo una nuova richiesta HTTP
+
+	// questa funzione chiama CALLBACK quando lo stato della richiesta cambia
+	// ASSOCIO UN EVENTO AL CAMBIAMENTO DI STATO
+	req.onreadystatechange = function() {
+		if (req.readyState === XMLHttpRequest.DONE) {
+			cback(req); // cback è la funzione che ho definito sopra
+		}
+	};
+
+	req.open(method, url); // post, loginservlet
+	req.send(); // invia  la richiesta
+
+}
+
+
+
+
+
+
 
 
 
@@ -118,6 +165,9 @@ document.addEventListener('DOMContentLoaded', function() {
 						if (x.readyState == XMLHttpRequest.DONE) {
 							if (x.status === 200) { // OK
 								console.log('Cartella creata correttamente');
+							} else {
+								alert("C'è stato un errore del server durante la creazione della cartella");
+								return;
 							}
 						}
 					}
@@ -213,6 +263,9 @@ document.addEventListener('DOMContentLoaded', function() {
 						if (x.readyState == XMLHttpRequest.DONE) {
 							if (x.status === 200) { // OK
 								console.log('File creato correttamente');
+							} else {
+								alert("C'è stato un errore del server durante la creazione del file");
+								return;
 							}
 						}
 					}
@@ -285,6 +338,9 @@ document.addEventListener('DOMContentLoaded', function() {
 						if (x.readyState == XMLHttpRequest.DONE) {
 							if (x.status === 200) { // OK
 								console.log('Cartella root creata correttamente');
+							} else {
+								alert("C'è stato un errore del server durante la creazione della cartella Root");
+								return;
 							}
 						}
 					}
@@ -351,6 +407,9 @@ document.addEventListener('DOMContentLoaded', function() {
 							if (x.readyState == XMLHttpRequest.DONE) {
 								if (x.status === 200) { // OK
 									console.log('Cancellazione avvenuta correttamente');
+								} else {
+									alert("C'è stato un errore del server durante l'operazione di cancellazione'");
+									return;	
 								}
 							}
 						}

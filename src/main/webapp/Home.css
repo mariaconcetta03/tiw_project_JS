@@ -16,6 +16,12 @@
 	font-size: 10px; /* Dimensione del testo */
 }
 
+#clearbutton {
+	width: 57px; /* Larghezza */
+	height: 16px; /* Altezza */
+	font-size: 10px; /* Dimensione del testo */
+}
+
 #form-box {
 	display: block; /* Ogni elemento occupa una riga */
 	margin-bottom: 10px; /* Spazio tra gli elementi */

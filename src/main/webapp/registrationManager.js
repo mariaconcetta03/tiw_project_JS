@@ -4,7 +4,7 @@
 	// prendo l'elemento registrationbutton e ci aggiunto un event listener che in base al click manda 
 	// i risultati con un metodo POST (tramite MakeCall) a RegistrationServlet
 	document.getElementById("registrationbutton").addEventListener('click', (e) => {
-		
+
 		// prendo gli elementi del form HTML
 		const password = document.getElementById('password').value;
 		const confirmPassword = document.getElementById('password_conf').value;
@@ -14,7 +14,6 @@
 		if (password !== confirmPassword) {
 			event.preventDefault(); // Impedisce l'invio del form
 			errorMessage.textContent = "Le due password non coincidono. Riprova";
-			// errorMessage.style.display = "block"; // Mostra il messaggio d'errore
 			return;
 		}
 
@@ -58,7 +57,6 @@
 
 function makeCall(method, url, formElement, cback, reset = true) {
 	var req = new XMLHttpRequest(); // creo una nuova richiesta HTTP
-
 
 	// questa funzione chiama CALLBACK quando lo stato della richiesta cambia
 	// ASSOCIO UN EVENTO AL CAMBIAMENTO DI STATO

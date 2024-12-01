@@ -18,16 +18,6 @@ import java.io.IOException;
 */
 
 
-
-/*
-			------------------  # TODO  --------------------		
-			3. Errori lato server devono essere comunicati
-				attraverso messaggi di errori nella pagina
-				
-			4. Se in tempo tasto close per info dei documenti
-*/
-
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -193,7 +183,8 @@ public class HomeServlet extends HttpServlet {
 		out.println("<b>Sommario:</b> <span id=\"sommario\"></span><br>");
 		out.println("<b>Tipo:</b> <span id=\"tipo\"></span><br>");
 		out.println("<b>Cartella:</b> <span id=\"nomecartella\"></span><br>");
-		
+		out.println("<br><br>");
+		out.println("<input id = \"clearbutton\" type=\"button\" value=\"CHIUDI\">");
 		
 		out.println("<br><br><br><br>");
 		out.println("<div id=\"form-box1\">");
