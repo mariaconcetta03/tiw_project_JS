@@ -24,6 +24,35 @@ public class CartellaDao {
 		}
 	}
 
+	
+	// this method deletes a folder from the DB
+	public void deleteCartella(Integer idToDelete) {
+		getConnection();
+		PreparedStatement preparedStatement = null;
+		
+        String sql = "DELETE FROM cartella WHERE id = ?";
+        try {
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setInt(1, idToDelete);
+
+			// cancelliamo l'elemento dalla tabella
+			preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// Chiudere risorse
+			try {
+				if (preparedStatement != null)
+					preparedStatement.close();
+				closeConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+        }
+        }
+
 	// this method closes the connection to the DB
 	private void closeConnection() {
 		try {
@@ -33,14 +62,13 @@ public class CartellaDao {
 		}
 	}
 
-
 	public String getNomeCartellaById(Integer idCartella) {
 		String nomeCartella = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		
+
 		getConnection();
-		
+
 		String sql1 = "SELECT nome FROM cartella WHERE id = ?";
 		try {
 			preparedStatement = connection.prepareStatement(sql1);
@@ -70,10 +98,9 @@ public class CartellaDao {
 
 		return nomeCartella;
 	}
-	
-	
-	
-	// Metodo per recuperare tutte le cartelle in una determinata cartella del database
+
+	// Metodo per recuperare tutte le cartelle in una determinata cartella del
+	// database
 	public List<Folder> getSubfoldersFromDB(String user, Integer cartella) {
 		List<Folder> foundFolders = new ArrayList<>();
 
@@ -84,11 +111,10 @@ public class CartellaDao {
 
 		// prepared statements per evitare SQL-Injection
 		String sql = "SELECT * FROM cartella WHERE sopracartella = ?";
-		
+
 		try {
 			preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setInt(1, cartella);
-			
 
 			// riceviamo il risultato della query SQL
 			resultSet = preparedStatement.executeQuery();
@@ -99,15 +125,15 @@ public class CartellaDao {
 				String nome = resultSet.getString("nome");
 				Date data_creazione = resultSet.getDate("data_creazione");
 				Integer sopracartella = resultSet.getInt("sopracartella");
-				Folder folderToAdd = new Folder(id, proprietario, nome, data_creazione, sopracartella); 
-				
-				folderToAdd.setSottocartelle(getSubfoldersFromDB (user, id)); 
+				Folder folderToAdd = new Folder(id, proprietario, nome, data_creazione, sopracartella);
+
+				folderToAdd.setSottocartelle(getSubfoldersFromDB(user, id));
 				foundFolders.add(folderToAdd);
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			// Chiudere risorse
 			try {
 				if (resultSet != null)
@@ -119,147 +145,133 @@ public class CartellaDao {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return foundFolders;
 	}
-	
-	
-	
-	
-	
+
 	// Metodo per recuperare tutte le cartelle dal database
-		public List<Folder> getAllUserFolder (String user) {
-            getConnection();
-            
-			List<Folder> allFolders = new ArrayList<>();
+	public List<Folder> getAllUserFolder(String user) {
+		getConnection();
 
-			PreparedStatement preparedStatement = null;
-			ResultSet resultSet = null;
-			
-			// prepariamo la query SQL
-			// prepared statements per evitare SQL-Injection
-			String sql = "SELECT * FROM cartella WHERE sopracartella is NULL and proprietario = ?";
+		List<Folder> allFolders = new ArrayList<>();
+
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+
+		// prepariamo la query SQL
+		// prepared statements per evitare SQL-Injection
+		String sql = "SELECT * FROM cartella WHERE sopracartella is NULL and proprietario = ?";
+		try {
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, user);
+			// prendiamo in
+			// considerazione le cartelle più esterne
+			// (le quali possono avere sottocartelle)
+
+			// riceviamo il risultato della query SQL
+			resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				Integer id = resultSet.getInt("id");
+				String proprietario = resultSet.getString("proprietario");
+				String nome = resultSet.getString("nome");
+				Date data_creazione = resultSet.getDate("data_creazione");
+				// se sopracartella è diverso da null, allora metto ID della sopracartella,
+				// altrimenti metto NULL
+				Integer sopracartella = resultSet.getObject("sopracartella") != null ? resultSet.getInt("sopracartella")
+						: null;
+				Folder folderToAdd = new Folder(id, proprietario, nome, data_creazione, sopracartella); // aggiungo la
+																										// cartella più
+																										// esterna
+				folderToAdd.setSottocartelle(null); // default
+				folderToAdd.setSottocartelle(getSubfoldersFromDB(user, folderToAdd.getId()));
+				allFolders.add(folderToAdd);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// Chiudere risorse
 			try {
-				preparedStatement = connection.prepareStatement(sql);
-				preparedStatement.setString(1, user);
-				// prendiamo in
-				// considerazione le cartelle più esterne
-				// (le quali possono avere sottocartelle)
-
-				// riceviamo il risultato della query SQL
-				resultSet = preparedStatement.executeQuery();
-
-				while (resultSet.next()) {
-					Integer id = resultSet.getInt("id");
-					String proprietario = resultSet.getString("proprietario");
-					String nome = resultSet.getString("nome");
-					Date data_creazione = resultSet.getDate("data_creazione");
-					// se sopracartella è diverso da null, allora metto ID della sopracartella,
-					// altrimenti metto NULL
-					Integer sopracartella = resultSet.getObject("sopracartella") != null ? resultSet.getInt("sopracartella")
-							: null;
-					Folder folderToAdd = new Folder(id, proprietario, nome, data_creazione, sopracartella); // aggiungo la
-																											// cartella più
-																											// esterna
-					folderToAdd.setSottocartelle(null); // default
-					folderToAdd.setSottocartelle(getSubfoldersFromDB(user, folderToAdd.getId()));
-					allFolders.add(folderToAdd);
-				}
-
+				if (resultSet != null)
+					resultSet.close();
+				if (preparedStatement != null)
+					preparedStatement.close();
+				closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}finally {
-				// Chiudere risorse
-				try {
-					if (resultSet != null)
-						resultSet.close();
-					if (preparedStatement != null)
-						preparedStatement.close();
-					closeConnection();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 			}
-			
-			return allFolders;
 		}
 
+		return allFolders;
+	}
 
+	// Metodo per creare cartelle
+	public void createSubfolderIntoDB(String proprietario, String nome, Date data_creazione, Integer sopracartella) {
+		getConnection();
 
-	  	// Metodo per creare cartelle
-		public void createSubfolderIntoDB(String proprietario, String nome, Date data_creazione, Integer sopracartella) {
-			getConnection();
-		
-			// inizializzazione delle variabili necessarie per la query
-			PreparedStatement preparedStatement = null;
+		// inizializzazione delle variabili necessarie per la query
+		PreparedStatement preparedStatement = null;
 
-			// prepared statements per evitare SQL-Injection
-			String sql = "INSERT INTO cartella (proprietario, nome, data_creazione, sopracartella) values (?,?,?,?)";
+		// prepared statements per evitare SQL-Injection
+		String sql = "INSERT INTO cartella (proprietario, nome, data_creazione, sopracartella) values (?,?,?,?)";
+		try {
+
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, proprietario);
+			preparedStatement.setString(2, nome);
+			preparedStatement.setDate(3, data_creazione);
+			preparedStatement.setInt(4, sopracartella);
+
+			preparedStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// Chiudere risorse
 			try {
-			
-				preparedStatement = connection.prepareStatement(sql);
-				preparedStatement.setString(1, proprietario);
-				preparedStatement.setString(2, nome);
-				preparedStatement.setDate(3, data_creazione);
-				preparedStatement.setInt(4, sopracartella);
-				
-				preparedStatement.executeUpdate();
-
-
+				if (preparedStatement != null)
+					preparedStatement.close();
+				closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}finally {
-				// Chiudere risorse
-				try {
-					if (preparedStatement != null)
-						preparedStatement.close();
-					closeConnection();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 			}
-			
 		}
-		
-		
-		
-			// Metodo per creare cartelle
-		public void createRootFolderIntoDB(String proprietario, String nome, Date data_creazione) {
-			getConnection();
-		
-			// inizializzazione delle variabili necessarie per la query
-			PreparedStatement preparedStatement = null;
 
-			// prepared statements per evitare SQL-Injection
-			String sql = "INSERT INTO cartella (proprietario, nome, data_creazione, sopracartella) values (?,?,?,?)";
+	}
+
+	// Metodo per creare cartelle
+	public void createRootFolderIntoDB(String proprietario, String nome, Date data_creazione) {
+		getConnection();
+
+		// inizializzazione delle variabili necessarie per la query
+		PreparedStatement preparedStatement = null;
+
+		// prepared statements per evitare SQL-Injection
+		String sql = "INSERT INTO cartella (proprietario, nome, data_creazione, sopracartella) values (?,?,?,?)";
+		try {
+
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, proprietario);
+			preparedStatement.setString(2, nome);
+			preparedStatement.setDate(3, data_creazione);
+			preparedStatement.setNull(4, java.sql.Types.INTEGER);
+
+			preparedStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// Chiudere risorse
 			try {
-			
-				preparedStatement = connection.prepareStatement(sql);
-				preparedStatement.setString(1, proprietario);
-				preparedStatement.setString(2, nome);
-				preparedStatement.setDate(3, data_creazione);
-				preparedStatement.setNull(4, java.sql.Types.INTEGER);
-				
-				preparedStatement.executeUpdate();
-
-
+				if (preparedStatement != null)
+					preparedStatement.close();
+				closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}finally {
-				// Chiudere risorse
-				try {
-					if (preparedStatement != null)
-						preparedStatement.close();
-					closeConnection();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 			}
-			
 		}
 
-
-
-
+	}
 
 }

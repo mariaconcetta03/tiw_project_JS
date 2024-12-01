@@ -272,12 +272,12 @@ document.addEventListener('DOMContentLoaded', function() {
 			// Event listener per il pulsante di conferma
 			confermaButton.addEventListener('click', () => {
 				const nomeFolder = input1.value.trim(); // prendo il nome inserito dall'utente
-				
+
 				// se l'utente non inserisce un nome
 				if (nomeFolder === '') {
 					alert('Inserisci un nome valido per la cartella!');
 					return;
-				} 
+				}
 
 
 				makeCall("POST", 'NewRootFolderServlet?nomeCartella=' + nomeFolder,
@@ -310,51 +310,72 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Recupero tutti gli elementi trascinabili
-document.addEventListener('DOMContentLoaded', function () {
-    const draggableItems = document.querySelectorAll('.file, .folder'); // File e cartelle
-    const dropzone = document.getElementById('dropzone'); // Zona cestino
+document.addEventListener('DOMContentLoaded', function() {
+	const draggableItems = document.querySelectorAll('.file, .folder'); // File e cartelle
+	const dropzone = document.getElementById('dropzone'); // Zona cestino
 
-    // Configuro ogni elemento trascinabile
-    draggableItems.forEach(item => {
-        item.addEventListener('dragstart', dragStart);
-        item.addEventListener('dragend', dragEnd);
-    });
+	// Configuro ogni elemento trascinabile
+	draggableItems.forEach(item => {
+		item.addEventListener('dragstart', dragStart);
+		item.addEventListener('dragend', dragEnd);
+	});
 
-    // Configuro la dropzone
-    dropzone.addEventListener('dragover', event => {
-        event.preventDefault(); // Necessario per consentire il drop
-        dropzone.classList.add('drag-over'); // Evidenzia la dropzone
-    });
+	// Configuro la dropzone
+	dropzone.addEventListener('dragover', event => {
+		event.preventDefault(); // Necessario per consentire il drop ed evitare l'azione di default (apro il file trascinato)
+		dropzone.classList.add('drag-over'); // Evidenzia la dropzone grazie al CSS
+	});
 
-    dropzone.addEventListener('dragleave', () => {
-        dropzone.classList.remove('drag-over'); // Rimuove l'evidenziazione
-    });
+	dropzone.addEventListener('dragleave', () => {
+		dropzone.classList.remove('drag-over'); // Rimuove l'evidenziazione grazie a CSS
+	});
 
-    dropzone.addEventListener('drop', event => {
-        event.preventDefault(); // Impedisce il comportamento predefinito
-        dropzone.classList.remove('drag-over'); // Rimuove l'evidenziazione
+	dropzone.addEventListener('drop', event => {
+		event.preventDefault(); // Impedisce il comportamento predefinito
+		dropzone.classList.remove('drag-over'); // Rimuove l'evidenziazione
 
-        const token = event.dataTransfer.getData('token'); // Recupera il token del file o della cartella
-        if (token) {
-            const elementoTrascinato = document.querySelector(`[data-token="${token}"]`);
-            if (elementoTrascinato) {
-                alert(`Hai eliminato: ${elementoTrascinato.textContent}`);
-                elementoTrascinato.remove(); // Elimina l'elemento dall'interfaccia
-            }
-        }
-    });
+		const token = event.dataTransfer.getData('token'); // Recupera il token del file o della cartella
+		if (token) {
+			const elementoTrascinato = document.querySelector(`[data-token="${token}"]`); // ${nome_variabile}
+			if (elementoTrascinato) {
+				// Mostriamo la finestra di dialogo con opzioni
+				const conferma = confirm(`Stai eliminando: \n${elementoTrascinato.textContent.replace(/\s+/g, "\n").trim()} \nSei sicuro di voler proseguire?`);
+				// s = Questo identifica una sequenza di uno o più caratteri di spazi vuoti, inclusi: Spazi ( ) Tabulazioni (\t) Nuove righe (\n)
+				// g = significa sostituzione GLOBALE (in tutto il testo)
+				// trim = elimina spazi, tabulazioni, a capo all'INIZIO
+				
+				if (conferma) {
+					//funzione per cancellare 	
+					makeCall("DELETE", 'DeleteServlet?token=' + token,
+						function(x) {
+							if (x.readyState == XMLHttpRequest.DONE) {
+								if (x.status === 200) { // OK
+									console.log('Cancellazione avvenuta correttamente');
+								}
+							}
+						}
+					);
+					elementoTrascinato.remove(); // Elimina l'elemento dall'interfaccia senza necessità di ricaricare pagina
+					alert("L'elemento è stato eliminato definitivamente.");
+				} else {
+					alert("Operazione annullata!");
+				}
+			}
+		}
+	});
 
-    // Funzione: Quando inizia il drag
-    function dragStart(event) {
-        const token = event.target.getAttribute('data-token'); // Recupera il token
-        event.dataTransfer.setData('token', token); // Salva il token nel dataTransfer
-        event.target.classList.add('dragging'); // Aggiunge un feedback visivo
-        console.log(`Drag iniziato per token: ${token}`);
-    }
 
-    // Funzione: Quando termina il drag
-    function dragEnd(event) {
-        event.target.classList.remove('dragging'); // Rimuove il feedback visivo
-        console.log('Drag terminato');
-    }
+
+
+	// Funzione: Quando inizia il drag
+	function dragStart(event) {
+		const token = event.target.getAttribute('data-token'); // Recupera il token dal file o dalla cartella
+		event.dataTransfer.setData('token', token); // Salva il token nel dataTransfer
+		event.target.classList.add('dragging'); // Aggiunge un feedback visivo grazie al css
+	}
+
+	// Funzione: Quando termina il drag
+	function dragEnd(event) {
+		event.target.classList.remove('dragging'); // Rimuove il feedback visivo grazie al css
+	}
 });

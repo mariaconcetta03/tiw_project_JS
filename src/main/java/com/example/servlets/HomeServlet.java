@@ -20,22 +20,11 @@ import java.io.IOException;
 
 
 /*
-			------------------  # TODO  --------------------
-				
-			2. Creare il cestino con drag and drop. Attenzione
-				poichè è possibile cancellare sia singoli file
-				sia intere cartelle (cancellazione a cascata).
-				Prima di inviare il comando di cancellazione 
-				al server l’utente vede una 
-				finestra modale di conferma e può decidere se 
-				annullare l’operazione o procedere.
-				
+			------------------  # TODO  --------------------		
 			3. Errori lato server devono essere comunicati
 				attraverso messaggi di errori nella pagina
 				
 			4. Se in tempo tasto close per info dei documenti
-		
-			
 */
 
 

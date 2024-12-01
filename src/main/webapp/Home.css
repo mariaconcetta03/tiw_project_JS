@@ -16,54 +16,27 @@
 	font-size: 10px; /* Dimensione del testo */
 }
 
-
-
-
-#form-box  {
-    display: block; /* Ogni elemento occupa una riga */
-    margin-bottom: 10px; /* Spazio tra gli elementi */
-    width: 100%; /* (Facoltativo) Per farli occupare tutta la larghezza */
+#form-box {
+	display: block; /* Ogni elemento occupa una riga */
+	margin-bottom: 10px; /* Spazio tra gli elementi */
+	width: 100%; /* (Facoltativo) Per farli occupare tutta la larghezza */
 }
 
-
-
-
-
-
-
- .draggable {
-            width: 100px;
-            height: 100px;
-            background-color: #007bff;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 10px;
-            cursor: grab;
-        }
-        
-        
-        
-        
-        .dragging {
-    opacity: 0.5;
+/* quando inizio il drag */
+.dragging {
+	opacity: 0.5;
 }
 
+/* Riquadro dove trasporto file/cartella (CESTINO) */
 .dropzone {
-    border: 2px dashed #ccc;
-    padding: 20px;
-    text-align: center;
-    margin-top: 20px;
+	border: 2px dashed #ccc;
+	padding: 20px;
+	text-align: center;
+	margin-top: 20px;
 }
 
+/* Quando passo sopra con l'elemento' */
 .dropzone.drag-over {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
+	background-color: #f8d7da;
+	border-color: #f5c6cb;
 }
-        
-
-        .dropzone.hover {
-            border-color: #28a745;
-            background-color: #e9ffe9;
-        }

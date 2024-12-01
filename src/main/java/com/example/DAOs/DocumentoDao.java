@@ -25,6 +25,7 @@ public class DocumentoDao {
 		}
 	}
 
+	
 	// this method closes the connection to the DB
 	private void closeConnection() {
 		try {
@@ -34,6 +35,37 @@ public class DocumentoDao {
 		}
 	}
 
+	
+
+	// this method deletes a file from the DB
+	public void deleteDocumento(Integer idToDelete) {
+		getConnection();
+		PreparedStatement preparedStatement = null;
+		
+        String sql = "DELETE FROM documento WHERE id = ?";
+        try {
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setInt(1, idToDelete);
+
+			// cancelliamo l'elemento dalla tabella
+			preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// Chiudere risorse
+			try {
+				if (preparedStatement != null)
+					preparedStatement.close();
+				closeConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+        }
+        }
+	
+	
 	public File findDocumentoByID(Integer fileId) {
 		getConnection();
 		String sql = "SELECT * FROM documento WHERE id = ?";
