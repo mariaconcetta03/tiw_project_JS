@@ -1,16 +1,16 @@
-#aggiungisottocartellabutton {
+.addsubfolder {
 	width: 155px; /* Larghezza */
 	height: 16px; /* Altezza */
 	font-size: 10px; /* Dimensione del testo */
 }
 
-#aggiungifilebutton {
+.addfile {
 	width: 93px; /* Larghezza */
 	height: 16px; /* Altezza */
 	font-size: 10px; /* Dimensione del testo */
 }
 
-#accedibutton {
+.accedi {
 	width: 57px; /* Larghezza */
 	height: 16px; /* Altezza */
 	font-size: 10px; /* Dimensione del testo */

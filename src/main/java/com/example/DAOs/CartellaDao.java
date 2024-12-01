@@ -241,7 +241,8 @@ public class CartellaDao {
 	}
 
 	// Metodo per creare cartelle
-	public void createRootFolderIntoDB(String proprietario, String nome, Date data_creazione) {
+	public Integer createRootFolderIntoDB(String proprietario, String nome, Date data_creazione) {
+		Integer generatedId = null;
 		getConnection();
 
 		// inizializzazione delle variabili necessarie per la query
@@ -250,14 +251,20 @@ public class CartellaDao {
 		// prepared statements per evitare SQL-Injection
 		String sql = "INSERT INTO cartella (proprietario, nome, data_creazione, sopracartella) values (?,?,?,?)";
 		try {
-
-			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			
 			preparedStatement.setString(1, proprietario);
 			preparedStatement.setString(2, nome);
 			preparedStatement.setDate(3, data_creazione);
 			preparedStatement.setNull(4, java.sql.Types.INTEGER);
 
 			preparedStatement.executeUpdate();
+			
+			// recuperiamo l'ID generato automaticamente dal server SQL
+	        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+	        if (generatedKeys.next()) {
+	            generatedId = generatedKeys.getInt(1); // Ottieni l'ID generato
+	        }
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -271,7 +278,7 @@ public class CartellaDao {
 				e.printStackTrace();
 			}
 		}
-
+	 return generatedId;
 	}
-
+	
 }

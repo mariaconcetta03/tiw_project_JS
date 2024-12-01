@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.UUID;
 import java.time.LocalDate;
 
 
@@ -35,17 +37,28 @@ public class NewRootFolderServlet extends HttpServlet {
 	
 
 
-	  // metodo che viene chiamato nel momento in cui l'utente ha finitpo di inserire i dati nel form HTML
+	  // metodo che viene chiamato nel momento in cui l'utente ha finito di inserire i dati nel form HTML
 	  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();        // Recupero dei dati dal form
         String user = null;
         String nome = request.getParameter("nomeCartella");
+        String newToken = UUID.randomUUID().toString(); 
+        Map<String, Integer> folderTokens =  null;
+        Integer id = null;
+        
         // ricevo nome utente (email) dalla sessione e metto i foldertokens come attributi
 		if (session != null) {
+			folderTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
 			user = session.getAttribute("email").toString();
 			}
-        cartellaDao.createRootFolderIntoDB(user, nome, Date.valueOf(LocalDate.now()));
-        //si crea il valore della data automaticamente
+
+        id = cartellaDao.createRootFolderIntoDB(user, nome, Date.valueOf(LocalDate.now()));
+		folderTokens.put(newToken, id); 
+		
+		session.setAttribute("folderTokens", folderTokens);
+
+        response.setContentType("text");
+        response.getWriter().println(newToken);
                 
      }
 	  

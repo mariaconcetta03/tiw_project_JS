@@ -150,7 +150,7 @@ public class HomeServlet extends HttpServlet {
 
 		out.println("<h1>Le tue cartelle:</h1>");
 		out.println("<div class=\"tree\">");
-		out.println("<ul>");
+		out.println("<ul id=\"outerlist\">");
 		
 		
 		// Generazione ricorsiva del codice HTML
