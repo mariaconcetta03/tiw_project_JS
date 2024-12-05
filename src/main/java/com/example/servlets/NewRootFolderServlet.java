@@ -48,7 +48,7 @@ public class NewRootFolderServlet extends HttpServlet {
         
         // ricevo nome utente (email) dalla sessione e metto i foldertokens come attributi
 		if (session != null) {
-			folderTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
+			folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
 			user = session.getAttribute("email").toString();
 			}
 
@@ -58,7 +58,7 @@ public class NewRootFolderServlet extends HttpServlet {
 		session.setAttribute("folderTokens", folderTokens);
 
         response.setContentType("text");
-        response.getWriter().println(newToken);
+        response.getWriter().print(newToken);
                 
      }
 	  

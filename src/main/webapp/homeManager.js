@@ -165,7 +165,7 @@ function setupSubfolderCreation() {
 					input.remove();
 					confermaButton.remove();
 
-					location.reload(); //per ricaricare la pagina
+				//	location.reload(); //per ricaricare la pagina
 
 				});
 			});
@@ -268,7 +268,7 @@ function setupFileCreation() {
 					input3.remove();
 					confermaButton.remove();
 
-					location.reload(); //per ricaricare la pagina
+					//location.reload(); //per ricaricare la pagina
 
 				});
 			});
@@ -331,8 +331,7 @@ function setupFolderCreation() {
 									subfolder.innerHTML = `
                                         ${nomeFolder}
                                         <input id="aggiungisottocartellabutton" class="addsubfolder" type="button" value="AGGIUNGI SOTTOCARTELLA" data-token="${x.responseText}">
-                                        <input id="aggiungifilebutton" class="addfile" type="button" value="AGGIUNGI FILE" data-token="${x.responseText}">
-                                    `;
+                                        <input id="aggiungifilebutton" class="addfile" type="button" value="AGGIUNGI FILE" data-token="${x.responseText.trim()}">`; // tolgo A CAPO
 
 									// Aggiungi manualmente gli event listeners ai miei bottoni nuovi
 									const addSubfolderButton = subfolder.querySelector('.addsubfolder');
@@ -400,7 +399,7 @@ function setupFolderCreation() {
 												input.remove();
 												confermaButton.remove();
 
-												location.reload(); //per ricaricare la pagina
+												//location.reload(); //per ricaricare la pagina
 
 											});
 										});
@@ -491,11 +490,107 @@ function setupFolderCreation() {
 												input3.remove();
 												confermaButton.remove();
 
-												location.reload(); //per ricaricare la pagina
+							//					location.reload(); //per ricaricare la pagina
 
 											});
 										});
                                     }
+                                    
+                                    
+                                     // Configuro le cartelle come aree di drop per i file
+      
+            subfolder.addEventListener('dragover', allowDrop);
+            subfolder.addEventListener('drop', dropFileIntoFolder); // sposto il file in una cartella
+            subfolder.classList.add('folderDropzone');
+            
+            // Le cartelle sono anche draggable per l'eliminazione nel cestino
+            subfolder.addEventListener('dragstart', dragStart);
+            subfolder.addEventListener('dragend', dragEnd);
+            
+            
+            	// sia per file che per folder
+  		function dragStart(event) {
+            const token = event.target.getAttribute('data-token');
+            const itemType = event.target.classList.contains('folder') ? 'folder' : 'file'; // se contiene la classe "folder", allora è folder, altrimenti file
+            event.dataTransfer.setData('sourceToken', token); // quello che io TRASCINO = sourceToken
+            event.dataTransfer.setData('itemType', itemType);
+            event.target.classList.add('dragging'); // CSS
+        }
+
+		// vale sia per file che per folder
+		function dragEnd(event) {
+            event.target.classList.remove('dragging');
+        }
+
+		// vale sia per file che per folder
+ 		function allowDrop(event) {
+            event.preventDefault();
+        }
+        
+        
+        function dropFileIntoFolder(event) {
+            event.preventDefault(); // evito operazione predefinita di apertura file
+                event.stopPropagation(); // Previene la propagazione dell'evento
+    
+    		const folderElement = event.target.closest('.folder');
+
+            const targetToken = folderElement.getAttribute('data-token'); // token della cartella in cui il file è stato rilasciato
+            const sourceToken = event.dataTransfer.getData('sourceToken'); // quello che ho trascinato (file)
+            const itemType = event.dataTransfer.getData('itemType'); // sarà file (nel caso corretto)
+
+            if (!sourceToken || !targetToken) {
+                alert('Operazione non valida.');
+                return;
+            }
+
+            // Solo i file possono essere spostati nelle cartelle !!!
+            if (itemType !== 'file') {
+                alert('Solo i documenti possono essere spostati nelle cartelle. Non è possibile spostare una cartella.');
+                return;
+            }
+
+            // Chiamata per spostare il file sul server
+            const params = `sourceToken=${sourceToken}&targetToken=${targetToken}`;
+            makeCall("POST", 'SpostaServlet?'+ params, function(x) {
+                if (x.readyState == XMLHttpRequest.DONE) {
+                    if (x.status === 200) {
+                        // Aggiorna l'interfaccia utente per riflettere lo spostamento SENZA ricaricare la pagina
+                        const draggedElement = document.querySelector(`[data-token="${sourceToken}"]`);
+                        const targetElement = folderElement; // deve essere la cartella in cui ho rilasciato il file
+						    console.log('draggedElement:', draggedElement);
+						        console.log('targetElement:', targetElement);
+						
+
+                        // Rimuovi l'elemento dalla posizione precedente
+                        if (draggedElement.parentNode) { // tolgo il file dalla lista
+                            draggedElement.parentNode.removeChild(draggedElement);
+                        }
+
+                        // Aggiungi l'elemento alla nuova cartella
+                        let targetList = targetElement.querySelector('ul');
+                        						        console.log('TARGET LIST:', targetList);
+
+                        if (!targetList) { // se la cartella non ha figli (è il nuovo elemento)
+                            targetList = document.createElement('ul');
+                            targetElement.appendChild(targetList); // metto la lista nuova (vuota)
+                        }
+                        targetList.appendChild(draggedElement); // metto l'elemento nella lista
+                    } else {
+                        alert("Errore durante lo spostamento del documento.");
+                    }
+                }
+            });
+        }
+        
+        
+
+            
+            
+            
+            
+            
+            
+     
 
 									const list = document.querySelector('#outerlist');
 									list.appendChild(subfolder);
@@ -631,11 +726,7 @@ function setupDraggableItems() {
         }
         
         
-        
-        function allowDrop(event) {
-			event.preventDefault();
-		}
-        
+     
         
 
 		// vale sia per file sia per cartelle

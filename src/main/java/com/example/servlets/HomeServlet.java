@@ -68,12 +68,6 @@ public class HomeServlet extends HttpServlet {
 		// aggiorniamo i token della sessione
 		session.setAttribute("folderTokens", folderTokens);
 
-
-
-		
-
-
-
 		out.println("<li class=\"folder\" draggable=\"true\" data-token=\"" + token+ "\">" + f.getNome()); // creo la cartella più esterna
 		out.println("<input id=\"aggiungisottocartellabutton\" class =\"addsubfolder\" type=\"button\" value=\"AGGIUNGI SOTTOCARTELLA\" data-token=\""+ token+"\">"
 				+ "<link rel=\"stylesheet\" href=\"Home.css\">");

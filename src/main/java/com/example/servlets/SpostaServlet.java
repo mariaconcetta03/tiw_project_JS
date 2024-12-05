@@ -52,12 +52,19 @@ public class SpostaServlet extends HttpServlet {
 		fileTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
 		}
 		
+		
+		
 		fileToken = request.getParameter("sourceToken");
 		folderToken = request.getParameter("targetToken");
+		System.out.println("QUESTO E IL TARGET TOKEN: " + folderToken);
+		System.out.println("QUESTA E TUTTA LA MAPPA: " + folderTokens);
 
 		
 		Integer fileID = fileTokens.get(fileToken);
 		Integer newFolderID = folderTokens.get(folderToken);
+		System.out.println("QUESTO E IL FILE ID: " + fileID);
+		System.out.println("QUESTO E IL NEW FOLDER ID: " + newFolderID);
+
 		
 		documentoDao.updateFilePosition(newFolderID, fileID);
 	
