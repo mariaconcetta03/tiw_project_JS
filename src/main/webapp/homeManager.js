@@ -528,80 +528,153 @@ function setupFolderCreation() {
 function setupDraggableItems() {
 	// Recupero tutti gli elementi trascinabili
 	document.addEventListener('DOMContentLoaded', function() {
-		const draggableItems = document.querySelectorAll('.file, .folder'); // File e cartelle
-		const dropzone = document.getElementById('dropzone'); // Zona cestino
+		const draggableFiles = document.querySelectorAll('.file'); // files -> verso cestino e verso altre cartelle
+        const folders = document.querySelectorAll('.folder'); // folders -> verso cestino
+        const dropzone = document.getElementById('dropzone'); // Zona cestino
 
-		// Configuro ogni elemento trascinabile
-		draggableItems.forEach(item => {
-			item.addEventListener('dragstart', dragStart);
-			item.addEventListener('dragend', dragEnd);
-		});
+		 // Configuro i file come elementi trascinabili, si ain cestino che in altre cartelle
+        draggableFiles.forEach(item => {
+            item.addEventListener('dragstart', dragStart);
+            item.addEventListener('dragend', dragEnd);
+        });
+        
+         // Configuro le cartelle come aree di drop per i file
+        folders.forEach(folder => {
+            folder.addEventListener('dragover', allowDrop);
+            folder.addEventListener('drop', dropFileIntoFolder); // sposto il file in una cartella
+            folder.classList.add('folderDropzone');
+            
+            // Le cartelle sono anche draggable per l'eliminazione nel cestino
+            folder.addEventListener('dragstart', dragStart);
+            folder.addEventListener('dragend', dragEnd);
+        });
+        
+			
 
-		// Configuro la dropzone
-		dropzone.addEventListener('dragover', event => {
-			event.preventDefault(); // Necessario per consentire il drop ed evitare l'azione di default (apro il file trascinato)
-			dropzone.classList.add('drag-over'); // Evidenzia la dropzone grazie al CSS
-		});
-
-		dropzone.addEventListener('dragleave', () => {
-			dropzone.classList.remove('drag-over'); // Rimuove l'evidenziazione grazie a CSS
-		});
-
-		dropzone.addEventListener('drop', event => {
-			event.preventDefault(); // Impedisce il comportamento predefinito
-			dropzone.classList.remove('drag-over'); // Rimuove l'evidenziazione
-
-			const token = event.dataTransfer.getData('token'); // Recupera il token del file o della cartella
-			if (token) {
-				const elementoTrascinato = document.querySelector(`[data-token="${token}"]`); // ${nome_variabile}
-				if (elementoTrascinato) {
-					// Mostriamo la finestra di dialogo con opzioni
-				
-					const conferma = confirm(`Stai eliminando: \n${elementoTrascinato.textContent.split('\n').map(line => line.trim()).filter(line => line !== "").join("\n")} \nSei sicuro di voler proseguire?`);
-					// s = Questo identifica una sequenza di uno o più caratteri di spazi vuoti, inclusi: Spazi ( ) Tabulazioni (\t) Nuove righe (\n)
-					// g = significa sostituzione GLOBALE (in tutto il testo)
-					// trim = elimina spazi, tabulazioni, a capo all'INIZIO
-
-					if (conferma) {
-						//funzione per cancellare 	
-						makeCall("DELETE", 'DeleteServlet?token=' + token,
-							function(x) {
-								if (x.readyState == XMLHttpRequest.DONE) {
-									if (x.status === 200) { // OK
-										elementoTrascinato.remove(); // Elimina l'elemento dall'interfaccia senza necessità di ricaricare pagina
-										alert("L'elemento è stato eliminato definitivamente.");
-										console.log('Cancellazione avvenuta correttamente');
-									} else {
-										alert("C'è stato un errore del server durante l'operazione di cancellazione'");
-										return;
-									}
-								}
-							}
-						);
-
-					} else {
-						alert("Operazione annullata!");
-					}
-				}
-			}
-		});
+		 // Configuro la dropzone (cestino)
+        dropzone.addEventListener('dragover', allowDrop); 
+        dropzone.addEventListener('drop', dropToTrash); // consento il drop nel cestino
 
 
+		// sia per file che per folder
+  		function dragStart(event) {
+            const token = event.target.getAttribute('data-token');
+            const itemType = event.target.classList.contains('folder') ? 'folder' : 'file'; // se contiene la classe "folder", allora è folder, altrimenti file
+            event.dataTransfer.setData('sourceToken', token); // quello che io TRASCINO = sourceToken
+            event.dataTransfer.setData('itemType', itemType);
+            event.target.classList.add('dragging'); // CSS
+        }
 
-
-		// Funzione: Quando inizia il drag
-		function dragStart(event) {
-			const token = event.target.getAttribute('data-token'); // Recupera il token dal file o dalla cartella
-			event.dataTransfer.setData('token', token); // Salva il token nel dataTransfer
-			event.target.classList.add('dragging'); // Aggiunge un feedback visivo grazie al css
-		}
-
-		// Funzione: Quando termina il drag
+		// vale sia per file che per folder
 		function dragEnd(event) {
-			event.target.classList.remove('dragging'); // Rimuove il feedback visivo grazie al css
+            event.target.classList.remove('dragging');
+        }
+
+		// vale sia per file che per folder
+ 		function allowDrop(event) {
+            event.preventDefault();
+        }
+        
+        
+        function dropFileIntoFolder(event) {
+            event.preventDefault(); // evito operazione predefinita di apertura file
+                event.stopPropagation(); // Previene la propagazione dell'evento
+    
+    		const folderElement = event.target.closest('.folder');
+
+            const targetToken = folderElement.getAttribute('data-token'); // token della cartella in cui il file è stato rilasciato
+            const sourceToken = event.dataTransfer.getData('sourceToken'); // quello che ho trascinato (file)
+            const itemType = event.dataTransfer.getData('itemType'); // sarà file (nel caso corretto)
+
+            if (!sourceToken || !targetToken) {
+                alert('Operazione non valida.');
+                return;
+            }
+
+            // Solo i file possono essere spostati nelle cartelle !!!
+            if (itemType !== 'file') {
+                alert('Solo i documenti possono essere spostati nelle cartelle. Non è possibile spostare una cartella.');
+                return;
+            }
+
+            // Chiamata per spostare il file sul server
+            const params = `sourceToken=${sourceToken}&targetToken=${targetToken}`;
+            makeCall("POST", 'SpostaServlet?'+ params, function(x) {
+                if (x.readyState == XMLHttpRequest.DONE) {
+                    if (x.status === 200) {
+                        // Aggiorna l'interfaccia utente per riflettere lo spostamento SENZA ricaricare la pagina
+                        const draggedElement = document.querySelector(`[data-token="${sourceToken}"]`);
+                        const targetElement = folderElement; // deve essere la cartella in cui ho rilasciato il file
+						    console.log('draggedElement:', draggedElement);
+						        console.log('targetElement:', targetElement);
+						
+
+                        // Rimuovi l'elemento dalla posizione precedente
+                        if (draggedElement.parentNode) { // tolgo il file dalla lista
+                            draggedElement.parentNode.removeChild(draggedElement);
+                        }
+
+                        // Aggiungi l'elemento alla nuova cartella
+                        let targetList = targetElement.querySelector('ul');
+                        						        console.log('TARGET LIST:', targetList);
+
+                        if (!targetList) { // se la cartella non ha figli (è il nuovo elemento)
+                            targetList = document.createElement('ul');
+                            targetElement.appendChild(targetList); // metto la lista nuova (vuota)
+                        }
+                        targetList.appendChild(draggedElement); // metto l'elemento nella lista
+                    } else {
+                        alert("Errore durante lo spostamento del documento.");
+                    }
+                }
+            });
+        }
+        
+        
+        
+        function allowDrop(event) {
+			event.preventDefault();
 		}
-	});
+        
+        
+
+		// vale sia per file sia per cartelle
+		function dropToTrash(event) {
+            event.preventDefault();
+            const sourceToken = event.dataTransfer.getData('sourceToken'); // da eliminare: file o cartella
+
+            if (!sourceToken) {
+                alert('Operazione non valida.');
+                return;
+            }
+
+            const elementoTrascinato = document.querySelector(`[data-token="${sourceToken}"]`);
+            console.log ("IL SOURSE TOKEN è" + sourceToken);
+
+            if (elementoTrascinato) {
+				const conferma = confirm(`Stai eliminando: \n${elementoTrascinato.textContent.split('\n').map(line => line.trim()).filter(line => line !== "").join("\n")} \nSei sicuro di voler proseguire?`);
+                if (conferma) { // utente preme OK
+                    // Chiamata per eliminare l'elemento
+                    makeCall("DELETE", 'DeleteServlet?token=' + sourceToken, function(x) {
+                        if (x.readyState == XMLHttpRequest.DONE) {
+                            if (x.status === 200) {
+                                elementoTrascinato.remove(); // Rimuove l'elemento dall'interfaccia
+                                alert("L'elemento è stato eliminato definitivamente.");
+                            } else {
+                                alert("Errore durante l'eliminazione dell'elemento.");
+                            }
+                        }
+                    });
+                } else { // utente preme ANNULLA
+                    alert("Operazione annullata!");
+                }
+            }
+        }
+    });
 }
+
+
+
 
 
 // chiamata istantanea quando carico il file JS

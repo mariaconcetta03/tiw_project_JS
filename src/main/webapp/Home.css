@@ -46,3 +46,21 @@
 	background-color: #f8d7da;
 	border-color: #f5c6cb;
 }
+
+
+
+.folderDropzone {
+    /* Increase the padding to enlarge the drop area */
+    padding: 20px;
+    margin: 1px;
+    border: 0.1px; /* Optional: Add a dashed border to indicate a drop zone */
+    border-radius: 20px;
+    min-height: 10px; /* Set a minimum height for the folder drop area */
+    position: relative; /* If you plan to position child elements absolutely */
+}
+
+.folderDropzone.drag-over {
+    /* Style when an item is dragged over the folder */
+    border-color: #00aaff;
+    background-color: #e0f7ff;
+}

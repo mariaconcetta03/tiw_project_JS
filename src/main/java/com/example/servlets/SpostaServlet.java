@@ -42,20 +42,25 @@ public class SpostaServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession(); // Recupero dei dati dal form
-		String user = null;
-		String folderToken = request.getParameter("folderToken"); // nome del folder in cui ci spostiamo
-		String fileToken = request.getParameter("fileToken"); // nome del file spostato
+		String fileToken = null;
+		String folderToken = null;
+		Map<String, Integer> folderTokens = null; // nome del folder in cui ci spostiamo
+		Map<String, Integer> fileTokens = null; // nome del file spostato
 
-		Map<String, Integer> folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
-		Map<String, Integer> fileTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
-
-		Integer fileID = fileTokens.get(fileToken);
-		Integer newFolderID = folderTokens.get(folderToken);
+		if (session != null){
+		folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
+		fileTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
+		}
+		
+		fileToken = request.getParameter("sourceToken");
+		folderToken = request.getParameter("targetToken");
 
 		
+		Integer fileID = fileTokens.get(fileToken);
+		Integer newFolderID = folderTokens.get(folderToken);
+		
 		documentoDao.updateFilePosition(newFolderID, fileID);
-		response.sendRedirect("ContenutiServlet?folderToken=" + folderToken);
-
+	
 	}
 	
 }
