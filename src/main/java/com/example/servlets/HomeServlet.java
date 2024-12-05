@@ -82,7 +82,7 @@ public class HomeServlet extends HttpServlet {
 		for (File file : files) { // docs
 			String tokenf = UUID.randomUUID().toString(); // Un token casuale o identificatore offuscato
 
-			out.println("<li class=\"file\" draggable=\"true\" data-token=\"" + token+ "\">" + file.getNome() + "     "
+			out.println("<li class=\"file\" draggable=\"true\" data-token=\"" + tokenf + "\">" + file.getNome() + "     "
 					+ "<input id = \"accedibutton\" type=\"button\" class=\"accedi\" value=\"ACCEDI\" data-tokenf=\""+ tokenf +"\">"
 					+ "<link rel=\"stylesheet\" href=\"Home.css\">" + "</li>");
 			fileTokens.put(tokenf, file.getId());
