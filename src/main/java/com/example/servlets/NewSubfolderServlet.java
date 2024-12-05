@@ -48,8 +48,11 @@ public void init(){
 		String user = null;
 		String nome = request.getParameter("nome"); // nome cartella creata
 		String folderToken = request.getParameter("folderToken");
-		Map<String, Integer> folderTokens = new HashMap<>();
+		Map<String, Integer> folderTokens = null;
 		Integer idSopracartella = null;
+		Integer newId = null;
+		String newToken = UUID.randomUUID().toString(); 
+     
 				
 		// attributi
 		if (session != null) {
@@ -60,8 +63,17 @@ public void init(){
 		idSopracartella = folderTokens.get(folderToken);
 
 		if (idSopracartella != null) {
-			cartellaDao.createSubfolderIntoDB(user, nome, Date.valueOf(LocalDate.now()), idSopracartella);
+			newId = cartellaDao.createSubfolderIntoDB(user, nome, Date.valueOf(LocalDate.now()), idSopracartella);
+			folderTokens.put(newToken, newId); 
+		
+		session.setAttribute("folderTokens", folderTokens);
+
+
 		}
+
+
+        response.setContentType("text");
+        response.getWriter().print(newToken);
 
 	}
 }
