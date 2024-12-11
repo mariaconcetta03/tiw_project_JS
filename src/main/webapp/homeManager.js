@@ -174,94 +174,167 @@ function handleSubfolderCreation(button) {
 										// il bottone addsubfolderbutton non deve essere settato a causa dell'event delegation
 
 										if (addFileButton) {
-											addFileButton.addEventListener('click', function() {
+											addFileButton.addEventListener('click', function(event) {
+															
+															const clickedButton = event.target; // bottone "aggiungi file" che è stato schiacciato
 
-												// Recupera il valore dell'attributo data-token (token della CARTELLA)
-												const token = this.getAttribute('data-token');
-												console.log("Token:", token); // Verifica che il token venga letto
+															// Recupera il valore dell'attributo data-token (token della CARTELLA)
+															const token = this.getAttribute('data-token');
+															console.log("Token:", token); // Verifica che il token venga letto
 
-												// Se il campo di input esiste già, non fare nulla
-												const formBox = document.getElementById('form-box1');
-												// Controlla se il form box contiene già elementi
-												if (formBox && formBox.children.length > 0) {
-													return; // Esci se il form box contiene elementi
-												}
+															// Se il campo di input esiste già, non fare nulla
+															const formBox = document.getElementById('form-box1');
+															// Controlla se il form box contiene già elementi
+															if (formBox && formBox.children.length > 0) {
+																return; // Esci se il form box contiene elementi
+															}
 
-												// Crea il campo di input per far inserire all'utente il nome del file
-												const contenitore1 = document.getElementById('form-box1');
-												const contenitore2 = document.getElementById('form-box2');
+															// Crea il campo di input per far inserire all'utente il nome del file
+															const contenitore1 = document.getElementById('form-box1');
+															const contenitore2 = document.getElementById('form-box2');
 
-												const contenitore3 = document.getElementById('form-box3');
+															const contenitore3 = document.getElementById('form-box3');
 
-												const contenitore4 = document.getElementById('form-box4');
-
-
-												const input1 = document.createElement('input');
-												input1.type = 'text';
-												input1.placeholder = 'Nome file';
-
-												const input2 = document.createElement('input');
-												input2.type = 'text';
-												input2.placeholder = 'Sommario (facoltativo)';
-
-												const input3 = document.createElement('input');
-												input3.type = 'text';
-												input3.placeholder = 'Tipo';
+															const contenitore4 = document.getElementById('form-box4');
 
 
+															const input1 = document.createElement('input');
+															input1.type = 'text';
+															input1.placeholder = 'Nome file';
 
-												// Crea un pulsante per confermare l'aggiunta della sottocartella
-												const confermaButton = document.createElement('button');
-												confermaButton.textContent = 'CREA';
+															const input2 = document.createElement('input');
+															input2.type = 'text';
+															input2.placeholder = 'Sommario (facoltativo)';
 
-												// Aggiungi l'input e il pulsante nel FORM BOX sotto
-												contenitore1.appendChild(input1);
-												contenitore2.appendChild(input2);
-												contenitore3.appendChild(input3);
-												contenitore4.appendChild(confermaButton);
-
-
-												// Event listener per il pulsante di conferma
-												confermaButton.addEventListener('click', () => {
-													const nomeFile = input1.value.trim(); // prendo il nome inserito dall'utente
-													const sommarioFile = input2.value.trim();
-													const tipoFile = input3.value.trim();
-													// TRIM: rimuovo gli spazi ad inizio e fine testo, e anche il terminatore di stringa
-
-													// se l'utente non inserisce un nome
-													if (nomeFile === '') {
-														alert('Inserisci un nome valido per il file!');
-														return;
-													} else if (tipoFile === '') {
-														alert('Inserisci un tipo valido per il file!');
-														return;
-													}
+															const input3 = document.createElement('input');
+															input3.type = 'text';
+															input3.placeholder = 'Tipo';
 
 
-													makeCall("POST", 'NewFileServlet?folderToken=' + token + '&nome=' + nomeFile + '&sommario=' + sommarioFile + '&tipo=' + tipoFile,
-														function(x) {
-															if (x.readyState == XMLHttpRequest.DONE) {
-																if (x.status === 200) { // OK
-																	console.log('File creato correttamente');
-																} else {
-																	alert("C'è stato un errore del server durante la creazione del file");
+
+															// Crea un pulsante per confermare l'aggiunta della sottocartella
+															const confermaButton = document.createElement('button');
+															confermaButton.textContent = 'CREA';
+
+															// Aggiungi l'input e il pulsante nel FORM BOX sotto
+															contenitore1.appendChild(input1);
+															contenitore2.appendChild(input2);
+															contenitore3.appendChild(input3);
+															contenitore4.appendChild(confermaButton);
+
+
+															// Event listener per il pulsante di conferma
+															confermaButton.addEventListener('click', () => {
+																const nomeFile = input1.value.trim(); // prendo il nome inserito dall'utente
+																const sommarioFile = input2.value.trim();
+																const tipoFile = input3.value.trim();
+																// TRIM: rimuovo gli spazi ad inizio e fine testo, e anche il terminatore di stringa
+
+																// se l'utente non inserisce un nome
+																if (nomeFile === '') {
+																	alert('Inserisci un nome valido per il file!');
+																	return;
+																} else if (tipoFile === '') {
+																	alert('Inserisci un tipo valido per il file!');
 																	return;
 																}
-															}
-														}
-													);
 
 
-													// Rimuovi il campo di input e il bottone di conferma
-													input1.remove();
-													input2.remove();
-													input3.remove();
-													confermaButton.remove();
+																makeCall("POST", 'NewFileServlet?folderToken=' + token + '&nome=' + nomeFile + '&sommario=' + sommarioFile + '&tipo=' + tipoFile,
+																	function(x) {
+																		if (x.readyState == XMLHttpRequest.DONE) {
+																			if (x.status === 200) { // OK
+																				console.log('File creato correttamente!!');
+																				
+																				// appendiamo dinamicamente il file alla lista della cartella
+																					const file = document.createElement('li');
+																					file.className = 'file';
+																					file.draggable = true;
+																					file.dataset.token = x.responseText.trim(); // il server restituisce il token del nuovo file
+																					file.dataset.tokenf = x.responseText.trim(); // il server restituisce il token del nuovo file
+																					file.innerHTML = `
+																				    ${nomeFile}
+																				    <input id="accedibutton" type="button" class="accedi" value="ACCEDI" data-tokenf="${x.responseText.trim()}">
+																					`;
 
-													//					location.reload(); //per ricaricare la pagina
+											console.log("Creazione file:", file); // Debug del nuovo elemento `li`
 
-												});
-											});
+
+																					// Aggiungi manualmente gli event listeners ai miei bottoni nuovi
+																					const accediButton = file.querySelector('.accedi'); // bottone appena creato sopra
+
+																					if(accediButton){
+																						accediButton.addEventListener('click', function() {
+																						console.log("Pulsante cliccato:", this); // Verifica che il clic venga registrato
+																		
+																						// Recupera il valore dell'attributo data-token
+																						const token = this.getAttribute('data-tokenf');
+																						console.log("Token:", token); // Verifica che il token venga letto
+																		
+																						// Effettua una chiamata GET usando la funzione makeCall
+																						makeCall("GET", 'AccediServlet?fileToken=' + token,
+																							function(x) {
+																								if (x.readyState == XMLHttpRequest.DONE) {
+																									if (x.status === 200) { // OK
+																										// Convertiamo la risposta JSON in un oggetto JavaScript
+																										console.log(x.responseText); // Debug della risposta
+																										const risposta = JSON.parse(x.responseText);
+																										document.getElementById("nomedocumento").textContent = risposta.nomedocumento;
+																										document.getElementById("email").textContent = risposta.email;
+																										document.getElementById("data").textContent = risposta.data;
+																										document.getElementById("sommario").textContent = risposta.sommario;
+																										document.getElementById("tipo").textContent = risposta.tipo;
+																										document.getElementById("nomecartella").textContent = risposta.nomecartella;
+																									} else {
+																										alert("C'è stato un errore del server durante il reperimento dei dati del file");
+																										return;
+																									}
+																								}
+																							});
+																						});
+																					}
+																				
+																				// appendiamo il file con il relativo bottone alla lista del subfolder più vicino
+																				const parentFolderElement = clickedButton.closest('.folder'); // Trova la cartella più vicina
+																					let list = parentFolderElement.querySelector('ul'); // Trova la lista interna	
+																					console.log("Lista trovata:", list); // Verifica se la lista esiste
+																					console.log("Lista trovata:", list); // Verifica se la lista esiste
+																					
+																					if (!list){
+																							list = document.createElement('ul');		
+																							parentFolderElement.appendChild(list); // Aggiungi la nuova lista al parentFolderElement
+																					}
+																					console.log("sto appendendo file");
+																					list.appendChild(file);
+																				
+																				
+																				
+																				
+																				
+																				
+																				
+																				
+																			} else {
+																				alert("C'è stato un errore del server durante la creazione del file");
+																				return;
+																			}
+																		}
+																	}
+																);
+
+
+																// Rimuovi il campo di input e il bottone di conferma
+																input1.remove();
+																input2.remove();
+																input3.remove();
+																confermaButton.remove();
+
+
+															});
+														});
+
+											
+											
 										}
 
 
@@ -400,7 +473,9 @@ function setupFileCreation() {
 	
 		// Trova tutti i bottoni "AGGIUNGI FILE"
 		document.querySelectorAll('.addfile').forEach(button => {
-			button.addEventListener('click', function() {
+			button.addEventListener('click', function(event) {
+				
+				const clickedButton = event.target; // bottone "aggiungi file" che è stato schiacciato
 
 				// Recupera il valore dell'attributo data-token (token della CARTELLA)
 				const token = this.getAttribute('data-token');
@@ -476,7 +551,10 @@ function setupFileCreation() {
 										file.draggable = true;
 										file.dataset.token = x.responseText.trim(); // il server restituisce il token del nuovo file
 										file.dataset.tokenf = x.responseText.trim(); // il server restituisce il token del nuovo file
-										file.innerHTML = ' ${nomeFile} <input id = "accedibutton" type="button" class="accedi" value="ACCEDI" data-tokenf="${x.responseText.trim()}">';
+										file.innerHTML = `
+									    ${nomeFile}
+									    <input id="accedibutton" type="button" class="accedi" value="ACCEDI" data-tokenf="${x.responseText.trim()}">
+										`;
 
 console.log("Creazione file:", file); // Debug del nuovo elemento `li`
 
@@ -516,10 +594,10 @@ console.log("Creazione file:", file); // Debug del nuovo elemento `li`
 										}
 									
 									// appendiamo il file con il relativo bottone alla lista del subfolder più vicino
-									const parentFolderElement = this.closest('.folder'); // Trova la cartella più vicina
+									const parentFolderElement = clickedButton.closest('.folder'); // Trova la cartella più vicina
 										let list = parentFolderElement.querySelector('ul'); // Trova la lista interna	
 										console.log("Lista trovata:", list); // Verifica se la lista esiste
-console.log("Lista trovata:", list); // Verifica se la lista esiste
+										console.log("Lista trovata:", list); // Verifica se la lista esiste
 										
 										if (!list){
 												list = document.createElement('ul');		
@@ -687,95 +765,167 @@ function setupFolderCreation() {
 									}
 
 									if (addFileButton) {
-										addFileButton.addEventListener('click', function() {
+										addFileButton.addEventListener('click', function(event) {
+														
+														const clickedButton = event.target; // bottone "aggiungi file" che è stato schiacciato
 
-											// Recupera il valore dell'attributo data-token (token della CARTELLA)
-											const token = this.getAttribute('data-token');
-											console.log("Token:", token); // Verifica che il token venga letto
+														// Recupera il valore dell'attributo data-token (token della CARTELLA)
+														const token = this.getAttribute('data-token');
+														console.log("Token:", token); // Verifica che il token venga letto
 
-											// Se il campo di input esiste già, non fare nulla
-											const formBox = document.getElementById('form-box1');
-											// Controlla se il form box contiene già elementi
-											if (formBox && formBox.children.length > 0) {
-												return; // Esci se il form box contiene elementi
-											}
+														// Se il campo di input esiste già, non fare nulla
+														const formBox = document.getElementById('form-box1');
+														// Controlla se il form box contiene già elementi
+														if (formBox && formBox.children.length > 0) {
+															return; // Esci se il form box contiene elementi
+														}
 
-											// Crea il campo di input per far inserire all'utente il nome del file
-											const contenitore1 = document.getElementById('form-box1');
-											const contenitore2 = document.getElementById('form-box2');
+														// Crea il campo di input per far inserire all'utente il nome del file
+														const contenitore1 = document.getElementById('form-box1');
+														const contenitore2 = document.getElementById('form-box2');
 
-											const contenitore3 = document.getElementById('form-box3');
+														const contenitore3 = document.getElementById('form-box3');
 
-											const contenitore4 = document.getElementById('form-box4');
-
-
-											const input1 = document.createElement('input');
-											input1.type = 'text';
-											input1.placeholder = 'Nome file';
-
-											const input2 = document.createElement('input');
-											input2.type = 'text';
-											input2.placeholder = 'Sommario (facoltativo)';
-
-											const input3 = document.createElement('input');
-											input3.type = 'text';
-											input3.placeholder = 'Tipo';
+														const contenitore4 = document.getElementById('form-box4');
 
 
+														const input1 = document.createElement('input');
+														input1.type = 'text';
+														input1.placeholder = 'Nome file';
 
-											// Crea un pulsante per confermare l'aggiunta della sottocartella
-											const confermaButton = document.createElement('button');
-											confermaButton.textContent = 'CREA';
+														const input2 = document.createElement('input');
+														input2.type = 'text';
+														input2.placeholder = 'Sommario (facoltativo)';
 
-											// Aggiungi l'input e il pulsante nel FORM BOX sotto
-											contenitore1.appendChild(input1);
-											contenitore2.appendChild(input2);
-											contenitore3.appendChild(input3);
-											contenitore4.appendChild(confermaButton);
-
-
-											// Event listener per il pulsante di conferma
-											confermaButton.addEventListener('click', () => {
-												const nomeFile = input1.value.trim(); // prendo il nome inserito dall'utente
-												const sommarioFile = input2.value.trim();
-												const tipoFile = input3.value.trim();
-												// TRIM: rimuovo gli spazi ad inizio e fine testo, e anche il terminatore di stringa
-
-												// se l'utente non inserisce un nome
-												if (nomeFile === '') {
-													alert('Inserisci un nome valido per il file!');
-													return;
-												} else if (tipoFile === '') {
-													alert('Inserisci un tipo valido per il file!');
-													return;
-												}
+														const input3 = document.createElement('input');
+														input3.type = 'text';
+														input3.placeholder = 'Tipo';
 
 
-												makeCall("POST", 'NewFileServlet?folderToken=' + token + '&nome=' + nomeFile + '&sommario=' + sommarioFile + '&tipo=' + tipoFile,
-													function(x) {
-														if (x.readyState == XMLHttpRequest.DONE) {
-															if (x.status === 200) { // OK
-																console.log('File creato correttamente');
-															} else {
-																alert("C'è stato un errore del server durante la creazione del file");
+
+														// Crea un pulsante per confermare l'aggiunta della sottocartella
+														const confermaButton = document.createElement('button');
+														confermaButton.textContent = 'CREA';
+
+														// Aggiungi l'input e il pulsante nel FORM BOX sotto
+														contenitore1.appendChild(input1);
+														contenitore2.appendChild(input2);
+														contenitore3.appendChild(input3);
+														contenitore4.appendChild(confermaButton);
+
+
+														// Event listener per il pulsante di conferma
+														confermaButton.addEventListener('click', () => {
+															const nomeFile = input1.value.trim(); // prendo il nome inserito dall'utente
+															const sommarioFile = input2.value.trim();
+															const tipoFile = input3.value.trim();
+															// TRIM: rimuovo gli spazi ad inizio e fine testo, e anche il terminatore di stringa
+
+															// se l'utente non inserisce un nome
+															if (nomeFile === '') {
+																alert('Inserisci un nome valido per il file!');
+																return;
+															} else if (tipoFile === '') {
+																alert('Inserisci un tipo valido per il file!');
 																return;
 															}
-														}
-													}
-												);
 
 
-												// Rimuovi il campo di input e il bottone di conferma
-												input1.remove();
-												input2.remove();
-												input3.remove();
-												confermaButton.remove();
+															makeCall("POST", 'NewFileServlet?folderToken=' + token + '&nome=' + nomeFile + '&sommario=' + sommarioFile + '&tipo=' + tipoFile,
+																function(x) {
+																	if (x.readyState == XMLHttpRequest.DONE) {
+																		if (x.status === 200) { // OK
+																			console.log('File creato correttamente!!');
+																			
+																			// appendiamo dinamicamente il file alla lista della cartella
+																				const file = document.createElement('li');
+																				file.className = 'file';
+																				file.draggable = true;
+																				file.dataset.token = x.responseText.trim(); // il server restituisce il token del nuovo file
+																				file.dataset.tokenf = x.responseText.trim(); // il server restituisce il token del nuovo file
+																				file.innerHTML = `
+																			    ${nomeFile}
+																			    <input id="accedibutton" type="button" class="accedi" value="ACCEDI" data-tokenf="${x.responseText.trim()}">
+																				`;
 
-												//					location.reload(); //per ricaricare la pagina
+										console.log("Creazione file:", file); // Debug del nuovo elemento `li`
 
-											});
-										});
-									}
+
+																				// Aggiungi manualmente gli event listeners ai miei bottoni nuovi
+																				const accediButton = file.querySelector('.accedi'); // bottone appena creato sopra
+
+																				if(accediButton){
+																					accediButton.addEventListener('click', function() {
+																					console.log("Pulsante cliccato:", this); // Verifica che il clic venga registrato
+																	
+																					// Recupera il valore dell'attributo data-token
+																					const token = this.getAttribute('data-tokenf');
+																					console.log("Token:", token); // Verifica che il token venga letto
+																	
+																					// Effettua una chiamata GET usando la funzione makeCall
+																					makeCall("GET", 'AccediServlet?fileToken=' + token,
+																						function(x) {
+																							if (x.readyState == XMLHttpRequest.DONE) {
+																								if (x.status === 200) { // OK
+																									// Convertiamo la risposta JSON in un oggetto JavaScript
+																									console.log(x.responseText); // Debug della risposta
+																									const risposta = JSON.parse(x.responseText);
+																									document.getElementById("nomedocumento").textContent = risposta.nomedocumento;
+																									document.getElementById("email").textContent = risposta.email;
+																									document.getElementById("data").textContent = risposta.data;
+																									document.getElementById("sommario").textContent = risposta.sommario;
+																									document.getElementById("tipo").textContent = risposta.tipo;
+																									document.getElementById("nomecartella").textContent = risposta.nomecartella;
+																								} else {
+																									alert("C'è stato un errore del server durante il reperimento dei dati del file");
+																									return;
+																								}
+																							}
+																						});
+																					});
+																				}
+																			
+																			// appendiamo il file con il relativo bottone alla lista del subfolder più vicino
+																			const parentFolderElement = clickedButton.closest('.folder'); // Trova la cartella più vicina
+																				let list = parentFolderElement.querySelector('ul'); // Trova la lista interna	
+																				console.log("Lista trovata:", list); // Verifica se la lista esiste
+																				console.log("Lista trovata:", list); // Verifica se la lista esiste
+																				
+																				if (!list){
+																						list = document.createElement('ul');		
+																						parentFolderElement.appendChild(list); // Aggiungi la nuova lista al parentFolderElement
+																				}
+																				console.log("sto appendendo file");
+																				list.appendChild(file);
+																			
+																			
+																			
+																			
+																			
+																			
+																			
+																			
+																		} else {
+																			alert("C'è stato un errore del server durante la creazione del file");
+																			return;
+																		}
+																	}
+																}
+															);
+
+
+															// Rimuovi il campo di input e il bottone di conferma
+															input1.remove();
+															input2.remove();
+															input3.remove();
+															confermaButton.remove();
+
+
+														});
+													});
+
+									
+										}
 
 
 									// Configuro le cartelle come aree di drop per i file
@@ -862,16 +1012,6 @@ function setupFolderCreation() {
 											}
 										});
 									}
-
-
-
-
-
-
-
-
-
-
 
 									const list = document.querySelector('#outerlist');
 									list.appendChild(subfolder);
