@@ -32,13 +32,14 @@ public class RegistrationServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		// getting the parameters written by the user
+		// parametri dell'utente 
+		// java escape = fa l'escape dei caratteri speciali (per Java)
 		String username = StringEscapeUtils.escapeJava(request.getParameter("username"));
 		String email = StringEscapeUtils.escapeJava(request.getParameter("email"));
 		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		String confirmPassword = StringEscapeUtils.escapeJava(request.getParameter("password_conf"));
 
-		// username ed e-mail sono unici o no?
+		// controllo se username ed e-mail sono unici o no
 		List<Integer> value = userDao.insertUser(username, password, email);
 		boolean unique, connectionError;
 
@@ -53,7 +54,8 @@ public class RegistrationServlet extends HttpServlet {
 		} else {
 			connectionError = true;
 		}
-
+	
+		// Setto lo STATO DEL SERVER e metto il messaggio nella RESPONSE
 		// caso di errore nella comunicazione col server
 		if (!unique && connectionError) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // status 500
@@ -61,30 +63,34 @@ public class RegistrationServlet extends HttpServlet {
 			return;
 		}
 
+		// caso di errore per lunghezza dei campi eccessiva
 		if (username.length() > 50) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Status 400
 			response.getWriter().println("L'username non può superare la lunghezza di 50 caratteri. Riprova.");
-		} else {
+		} else { // caso di username già usato
 			if (!unique) {
-
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Status 400
 				response.getWriter().println("Lo username o l'e-mail sono già in uso. Riprova.");
 			} else {
-				// if confirmation password is different from the password
+				// se la password di coonferma è diversa dalla password
 				if (!password.equals(confirmPassword)) {
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Status 400
 					response.getWriter().println("Le due password non coincidono. Riprova");
-				} else {
+				} else { // caso di password che non rispetta i vincoli di caratteri
+					// (?=.*\d) ALMENO UN NUMERO
+					// (?=.*[a-z]) ALMENO UNA MINUSCOLA
+					// (?=.*[A-Z]) ALMENO UNA MAIUSCOLA
+					// (?=.*[@#$%^&+=]) ALMENO UN CARATTERE SPECIALE
+					// {8,} MINIMO 8 CARATTERI 					       
 					String regex = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!£-]).{8,50}";
 					if (!password.matches(regex)) {
 						response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Status 400
 						response.getWriter().println("La password non soddisfa i requisiti richiesti. Riprova.");
-					} else {
+					} else { // CASO OK
 						HttpSession session = request.getSession();
 						session = request.getSession();
-						session.setAttribute("email", email); // Salviamo l'email nella sessione, perchè è quella del
-																// PROPRIETARIO
-																// delle cartelle
+						session.setAttribute("email", email); // Salviamo l'email nella sessione, perchè è quella del PROPRIETARIO delle cartelle
+															
 						response.setStatus(HttpServletResponse.SC_OK); // Status 200 OK
 						response.setCharacterEncoding("UTF-8");
 						response.getWriter().println(email);

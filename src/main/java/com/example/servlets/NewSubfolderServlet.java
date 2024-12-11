@@ -28,17 +28,13 @@ import com.example.DAOs.*;
 public class NewSubfolderServlet extends HttpServlet {
 
 	CartellaDao cartellaDao = null;
-	
+
 	// questa funzione viene eseguita solo una volta quando la servlet
 	// viene caricata in memoria
 	@Override
-public void init(){
+	public void init() {
 		cartellaDao = new CartellaDao();
 	}
-	
-
-
-
 
 	// metodo che viene chiamato nel momento in cui l'utente ha finito di inserire i
 	// dati nel form HTML
@@ -47,33 +43,28 @@ public void init(){
 		HttpSession session = request.getSession(); // Recupero dei dati dal form
 		String user = null;
 		String nome = request.getParameter("nome"); // nome cartella creata
-		String folderToken = request.getParameter("folderToken");
+		String folderToken = request.getParameter("folderToken"); // token della sopracartella
 		Map<String, Integer> folderTokens = null;
 		Integer idSopracartella = null;
 		Integer newId = null;
-		String newToken = UUID.randomUUID().toString(); 
-     
-				
+		String newToken = UUID.randomUUID().toString();
+
 		// attributi
 		if (session != null) {
 			user = session.getAttribute("email").toString();
 			folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
 		}
-		
+
 		idSopracartella = folderTokens.get(folderToken);
 
 		if (idSopracartella != null) {
 			newId = cartellaDao.createSubfolderIntoDB(user, nome, Date.valueOf(LocalDate.now()), idSopracartella);
-			folderTokens.put(newToken, newId); 
-		
-		session.setAttribute("folderTokens", folderTokens);
-
-
+			folderTokens.put(newToken, newId);
+			session.setAttribute("folderTokens", folderTokens);
 		}
 
-
-        response.setContentType("text");
-        response.getWriter().print(newToken);
+		response.setContentType("text");
+		response.getWriter().print(newToken); // passiamo il token al JS
 
 	}
 }
