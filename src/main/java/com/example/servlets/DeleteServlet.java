@@ -1,10 +1,6 @@
 package com.example.servlets;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.example.DAOs.*;
-import com.example.beans.*;
 
 
 @WebServlet("/DeleteServlet") 
@@ -31,16 +26,16 @@ public class DeleteServlet extends HttpServlet {
 		cartellaDao = new CartellaDao();
 	}
 
-
+	
+	// Questo metodo serve per cancellare FILE oppure CARTELLE
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String token = request.getParameter("token"); // Recupera l'ID dell'elemento da eliminare
+        String token = request.getParameter("token"); // Recupera il token dell'elemento da eliminare
 		Map<String, Integer> folderTokens = null;
 		Map<String, Integer> fileTokens = null;
 		Integer idToDelete = null;
 		Boolean isFile = false;
-	
 		HttpSession session = request.getSession();
 		
 		if (session != null) {
@@ -49,12 +44,13 @@ public class DeleteServlet extends HttpServlet {
 		}
 		
         if (token == null) {
+			System.out.println("L'elemento da eliminare non esiste");
             return;
         }
         
-        idToDelete = folderTokens.get(token);
+        idToDelete = folderTokens.get(token); // controllo prima se c'è il folder da eliminare (se il token è del folder)
 
-       if (idToDelete == null) {
+       if (idToDelete == null) { // se non è un token del folder, allora è un file
 		    idToDelete = fileTokens.get(token);
 			isFile = true;
 	   }
