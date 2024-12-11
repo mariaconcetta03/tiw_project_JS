@@ -47,27 +47,33 @@ public class NewFileServlet extends HttpServlet {
 		String tipo = request.getParameter("tipo");
 		String sommario = request.getParameter("sommario");
 		String folderToken = request.getParameter("folderToken");
-		Map<String, Integer> folderTokens = new HashMap<>();
+		Map<String, Integer> folderTokens = null;
+		Map<String, Integer> fileTokens = null;
+		String newToken = UUID.randomUUID().toString(); 
 		Integer idSopracartella = null;
+		Integer newId = null;
 		
 		// attributi
 		if (session != null) {
 			user = session.getAttribute("email").toString();
 			folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
+			fileTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
 		}
 
 		idSopracartella = folderTokens.get(folderToken);
 		
 		if (idSopracartella != null) {
-			documentoDao.createFile(user, nome, Date.valueOf(LocalDate.now()), sommario, tipo, idSopracartella);
+			newId = documentoDao.createFile(user, nome, Date.valueOf(LocalDate.now()), sommario, tipo, idSopracartella);
+			fileTokens.put(newToken, newId);
 			session.setAttribute("idSopracartella", null); // metto a null il valore di idSopracartella, per far
 															// apparire il messaggio
 															// di errore in caso di future creazioni di cartella
-		} else {
-			String errorMessage = "Nessuna cartella di destinazione selezionata!";
-			return;
-		}
+			session.setAttribute("fileTokens", fileTokens); // aggiorno i filetokens con il token del nuovo file
+			response.setContentType("text");
+			response.getWriter().print(newToken); // glielo passiamo al browser (js)
+		} 
 
+		  
 	}
 
 	

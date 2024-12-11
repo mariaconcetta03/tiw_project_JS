@@ -396,7 +396,8 @@ function handleSubfolderCreation(button) {
 // adding new file
 
 function setupFileCreation() {
-
+	
+	
 		// Trova tutti i bottoni "AGGIUNGI FILE"
 		document.querySelectorAll('.addfile').forEach(button => {
 			button.addEventListener('click', function() {
@@ -467,7 +468,73 @@ function setupFileCreation() {
 						function(x) {
 							if (x.readyState == XMLHttpRequest.DONE) {
 								if (x.status === 200) { // OK
-									console.log('File creato correttamente');
+									console.log('File creato correttamente!!');
+									
+									// appendiamo dinamicamente il file alla lista della cartella
+										const file = document.createElement('li');
+										file.className = 'file';
+										file.draggable = true;
+										file.dataset.token = x.responseText.trim(); // il server restituisce il token del nuovo file
+										file.dataset.tokenf = x.responseText.trim(); // il server restituisce il token del nuovo file
+										file.innerHTML = ' ${nomeFile} <input id = "accedibutton" type="button" class="accedi" value="ACCEDI" data-tokenf="${x.responseText.trim()}">';
+
+console.log("Creazione file:", file); // Debug del nuovo elemento `li`
+
+
+										// Aggiungi manualmente gli event listeners ai miei bottoni nuovi
+										const accediButton = file.querySelector('.accedi'); // bottone appena creato sopra
+
+										if(accediButton){
+											accediButton.addEventListener('click', function() {
+											console.log("Pulsante cliccato:", this); // Verifica che il clic venga registrato
+							
+											// Recupera il valore dell'attributo data-token
+											const token = this.getAttribute('data-tokenf');
+											console.log("Token:", token); // Verifica che il token venga letto
+							
+											// Effettua una chiamata GET usando la funzione makeCall
+											makeCall("GET", 'AccediServlet?fileToken=' + token,
+												function(x) {
+													if (x.readyState == XMLHttpRequest.DONE) {
+														if (x.status === 200) { // OK
+															// Convertiamo la risposta JSON in un oggetto JavaScript
+															console.log(x.responseText); // Debug della risposta
+															const risposta = JSON.parse(x.responseText);
+															document.getElementById("nomedocumento").textContent = risposta.nomedocumento;
+															document.getElementById("email").textContent = risposta.email;
+															document.getElementById("data").textContent = risposta.data;
+															document.getElementById("sommario").textContent = risposta.sommario;
+															document.getElementById("tipo").textContent = risposta.tipo;
+															document.getElementById("nomecartella").textContent = risposta.nomecartella;
+														} else {
+															alert("C'è stato un errore del server durante il reperimento dei dati del file");
+															return;
+														}
+													}
+												});
+											});
+										}
+									
+									// appendiamo il file con il relativo bottone alla lista del subfolder più vicino
+									const parentFolderElement = this.closest('.folder'); // Trova la cartella più vicina
+										let list = parentFolderElement.querySelector('ul'); // Trova la lista interna	
+										console.log("Lista trovata:", list); // Verifica se la lista esiste
+console.log("Lista trovata:", list); // Verifica se la lista esiste
+										
+										if (!list){
+												list = document.createElement('ul');		
+												parentFolderElement.appendChild(list); // Aggiungi la nuova lista al parentFolderElement
+										}
+										console.log("sto appendendo file");
+										list.appendChild(file);
+									
+									
+									
+									
+									
+									
+									
+									
 								} else {
 									alert("C'è stato un errore del server durante la creazione del file");
 									return;
@@ -483,13 +550,14 @@ function setupFileCreation() {
 					input3.remove();
 					confermaButton.remove();
 
-					//location.reload(); //per ricaricare la pagina
 
 				});
 			});
 		});
 	
 }
+
+
 
 
 
@@ -613,8 +681,7 @@ function setupFolderCreation() {
 												input.remove();
 												confermaButton.remove();
 
-												//location.reload(); //per ricaricare la pagina
-
+												
 											});
 										});
 									}

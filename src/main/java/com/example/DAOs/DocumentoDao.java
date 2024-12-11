@@ -167,16 +167,17 @@ public class DocumentoDao {
 	
 	
 	// Metodo per creare cartelle
-		public void createFile(String proprietario, String nome, Date data_creazione, String sommario, String tipo,
+		public Integer createFile(String proprietario, String nome, Date data_creazione, String sommario, String tipo,
 				Integer sopracartella) {
 			getConnection();
 			PreparedStatement preparedStatement = null;
 			ResultSet resultSet = null;
+			Integer generatedId = null;
 			
 			// prepared statements per evitare SQL-Injection
 			String sql = "INSERT INTO documento (proprietario, nome, data_creazione, sommario, tipo, cartella) values (?,?,?,?,?,?)";
 			try {
-				preparedStatement = connection.prepareStatement(sql);
+				preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 				preparedStatement.setString(1, proprietario);
 				preparedStatement.setString(2, nome);
 				preparedStatement.setDate(3, data_creazione);
@@ -185,6 +186,13 @@ public class DocumentoDao {
 				preparedStatement.setInt(6, sopracartella);
 
 				preparedStatement.executeUpdate();
+				
+				// recuperiamo l'ID generato automaticamente dal server SQL
+		        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+		        if (generatedKeys.next()) {
+		            generatedId = generatedKeys.getInt(1); // Ottieni l'ID generato
+		        }
+		        
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
@@ -199,6 +207,7 @@ public class DocumentoDao {
 					e.printStackTrace();
 				}
 			}
+			return generatedId;
 		}
 	
 	
