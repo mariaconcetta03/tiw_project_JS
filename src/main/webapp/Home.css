@@ -25,7 +25,7 @@
 #form-box {
 	display: block; /* Ogni elemento occupa una riga */
 	margin-bottom: 10px; /* Spazio tra gli elementi */
-	width: 100%; /* (Facoltativo) Per farli occupare tutta la larghezza */
+	width: 100%; /* Per farli occupare tutta la larghezza */
 }
 
 /* quando inizio il drag */
@@ -33,7 +33,7 @@
 	opacity: 0.5;
 }
 
-/* Riquadro dove trasporto file/cartella (CESTINO) */
+/* Riquadro dove trasportiamo file/cartella (CESTINO) */
 .dropzone {
 	border: 2px dashed #ccc;
 	padding: 20px;

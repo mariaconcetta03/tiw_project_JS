@@ -12,7 +12,7 @@
 
 		// controllo se le password coincidono
 		if (password !== confirmPassword) {
-			event.preventDefault(); // Impedisce l'invio del form
+			e.preventDefault(); // Impedisce l'invio del form
 			errorMessage.textContent = "Le due password non coincidono. Riprova";
 			return;
 		}
@@ -43,6 +43,7 @@
 			);
 		} else {
 			form.reportValidity(); // controllo di validità dei dati inseriti nei campi del form
+			// se i campi fillati non sono validi, allora mostra un messaggio predefinito
 		}
 	});
 
@@ -66,7 +67,7 @@ function makeCall(method, url, formElement, cback, reset = true) {
 		}
 	};
 
-	req.open(method, url); // post, RegistrationServlet
+	req.open(method, url); // iqun esto caso: post, RegistrationServlet
 
 	if (formElement == null) {
 		req.send();
@@ -77,7 +78,7 @@ function makeCall(method, url, formElement, cback, reset = true) {
 	}
 
 	if (formElement !== null && reset === true) {
-		formElement.reset();
+		formElement.reset(); // cancello i dati scritti nella form
 	}
 }
 

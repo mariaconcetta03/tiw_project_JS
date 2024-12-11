@@ -1,26 +1,19 @@
 function setupAccediButtons() {
-
 	
-		// solamente quando l'HTML è caricato (DOM)
-
-		// Prendo tutti gli elementi accedibutton e ci aggiungo un event listener
+		
 		document.querySelectorAll('.accedi').forEach(button => {
-			console.log("Pulsante trovato:", button); // Verifica che i pulsanti vengano rilevati
-
+		
 			button.addEventListener('click', function() {
-				console.log("Pulsante cliccato:", this); // Verifica che il clic venga registrato
-
+		
 				// Recupera il valore dell'attributo data-token
 				const token = this.getAttribute('data-tokenf');
-				console.log("Token:", token); // Verifica che il token venga letto
-
+		
 				// Effettua una chiamata GET usando la funzione makeCall
 				makeCall("GET", 'AccediServlet?fileToken=' + token,
 					function(x) {
 						if (x.readyState == XMLHttpRequest.DONE) {
 							if (x.status === 200) { // OK
 								// Convertiamo la risposta JSON in un oggetto JavaScript
-								console.log(x.responseText); // Debug della risposta
 								const risposta = JSON.parse(x.responseText);
 								document.getElementById("nomedocumento").textContent = risposta.nomedocumento;
 								document.getElementById("email").textContent = risposta.email;
@@ -28,8 +21,6 @@ function setupAccediButtons() {
 								document.getElementById("sommario").textContent = risposta.sommario;
 								document.getElementById("tipo").textContent = risposta.tipo;
 								document.getElementById("nomecartella").textContent = risposta.nomecartella;
-
-
 							} else {
 								alert("C'è stato un errore del server durante il reperimento dei dati del file");
 								return;
@@ -69,11 +60,9 @@ function makeCall(method, url, cback) {
 function setupCloseButton(){
 	// Prendo tutti gli elementi accedibutton e ci aggiungo un event listener
 	document.querySelectorAll('#clearbutton').forEach(button => {
-		console.log("Pulsante trovato:", button); // Verifica che i pulsanti vengano rilevati
-
+		
 		button.addEventListener('click', function() {
-			console.log("Pulsante cliccato:", this); // Verifica che il clic venga registrato
-
+		
 			document.getElementById("nomedocumento").textContent = "";
 			document.getElementById("email").textContent = "";
 			document.getElementById("data").textContent = "";
@@ -114,7 +103,6 @@ function handleSubfolderCreation(button) {
 
 					// Recupera il valore dell'attributo data-token (token della SOPRACARTELLA)
 					const token = clickedButton.getAttribute('data-token');
-					console.log("Token:", token); // Verifica che il token venga letto
 
 					// Se il campo di input esiste già, non fare nulla
 					const formBox = document.getElementById('form-box1');
@@ -180,7 +168,6 @@ function handleSubfolderCreation(button) {
 
 															// Recupera il valore dell'attributo data-token (token della CARTELLA)
 															const token = this.getAttribute('data-token');
-															console.log("Token:", token); // Verifica che il token venga letto
 
 															// Se il campo di input esiste già, non fare nulla
 															const formBox = document.getElementById('form-box1');
@@ -244,7 +231,6 @@ function handleSubfolderCreation(button) {
 																	function(x) {
 																		if (x.readyState == XMLHttpRequest.DONE) {
 																			if (x.status === 200) { // OK
-																				console.log('File creato correttamente!!');
 																				
 																				// appendiamo dinamicamente il file alla lista della cartella
 																					const file = document.createElement('li');
@@ -257,19 +243,15 @@ function handleSubfolderCreation(button) {
 																				    <input id="accedibutton" type="button" class="accedi" value="ACCEDI" data-tokenf="${x.responseText.trim()}">
 																					`;
 
-											console.log("Creazione file:", file); // Debug del nuovo elemento `li`
-
-
+										
 																					// Aggiungi manualmente gli event listeners ai miei bottoni nuovi
 																					const accediButton = file.querySelector('.accedi'); // bottone appena creato sopra
 
 																					if(accediButton){
 																						accediButton.addEventListener('click', function() {
-																						console.log("Pulsante cliccato:", this); // Verifica che il clic venga registrato
-																		
+																			
 																						// Recupera il valore dell'attributo data-token
 																						const token = this.getAttribute('data-tokenf');
-																						console.log("Token:", token); // Verifica che il token venga letto
 																		
 																						// Effettua una chiamata GET usando la funzione makeCall
 																						makeCall("GET", 'AccediServlet?fileToken=' + token,
@@ -277,7 +259,6 @@ function handleSubfolderCreation(button) {
 																								if (x.readyState == XMLHttpRequest.DONE) {
 																									if (x.status === 200) { // OK
 																										// Convertiamo la risposta JSON in un oggetto JavaScript
-																										console.log(x.responseText); // Debug della risposta
 																										const risposta = JSON.parse(x.responseText);
 																										document.getElementById("nomedocumento").textContent = risposta.nomedocumento;
 																										document.getElementById("email").textContent = risposta.email;
@@ -297,22 +278,12 @@ function handleSubfolderCreation(button) {
 																				// appendiamo il file con il relativo bottone alla lista del subfolder più vicino
 																				const parentFolderElement = clickedButton.closest('.folder'); // Trova la cartella più vicina
 																					let list = parentFolderElement.querySelector('ul'); // Trova la lista interna	
-																					console.log("Lista trovata:", list); // Verifica se la lista esiste
-																					console.log("Lista trovata:", list); // Verifica se la lista esiste
 																					
 																					if (!list){
 																							list = document.createElement('ul');		
 																							parentFolderElement.appendChild(list); // Aggiungi la nuova lista al parentFolderElement
 																					}
-																					console.log("sto appendendo file");
 																					list.appendChild(file);
-																				
-																				
-																				
-																				
-																				
-																				
-																				
 																				
 																			} else {
 																				alert("C'è stato un errore del server durante la creazione del file");
@@ -398,10 +369,7 @@ function handleSubfolderCreation(button) {
 														// Aggiorna l'interfaccia utente per riflettere lo spostamento SENZA ricaricare la pagina
 														const draggedElement = document.querySelector(`[data-token="${sourceToken}"]`);
 														const targetElement = folderElement; // deve essere la cartella in cui ho rilasciato il file
-														console.log('draggedElement:', draggedElement);
-														console.log('targetElement:', targetElement);
-
-
+														
 														// Rimuovi l'elemento dalla posizione precedente
 														if (draggedElement.parentNode) { // tolgo il file dalla lista
 															draggedElement.parentNode.removeChild(draggedElement);
@@ -409,8 +377,7 @@ function handleSubfolderCreation(button) {
 
 														// Aggiungi l'elemento alla nuova cartella
 														let targetList = targetElement.querySelector('ul');
-														console.log('TARGET LIST:', targetList);
-
+														
 														if (!targetList) { // se la cartella non ha figli (è il nuovo elemento)
 															targetList = document.createElement('ul');
 															targetElement.appendChild(targetList); // metto la lista nuova (vuota)
@@ -436,13 +403,10 @@ function handleSubfolderCreation(button) {
 						
 										}
 										list.appendChild(subfolder);
-				
-										
+			
 										// Rimuovi input e pulsante
 										input.remove();
 										confermaButton.remove();
-
-										console.log('Cartella root creata correttamente');
 									} else {
 										alert("C'è stato un errore del server durante la creazione della cartella");
 										return;
@@ -455,9 +419,6 @@ function handleSubfolderCreation(button) {
 						// Rimuovi il campo di input e il bottone di conferma
 						input.remove();
 						confermaButton.remove();
-
-						//	location.reload(); //per ricaricare la pagina
-
 					});
 	
 }
@@ -479,7 +440,6 @@ function setupFileCreation() {
 
 				// Recupera il valore dell'attributo data-token (token della CARTELLA)
 				const token = this.getAttribute('data-token');
-				console.log("Token:", token); // Verifica che il token venga letto
 
 				// Se il campo di input esiste già, non fare nulla
 				const formBox = document.getElementById('form-box1');
@@ -543,8 +503,6 @@ function setupFileCreation() {
 						function(x) {
 							if (x.readyState == XMLHttpRequest.DONE) {
 								if (x.status === 200) { // OK
-									console.log('File creato correttamente!!');
-									
 									// appendiamo dinamicamente il file alla lista della cartella
 										const file = document.createElement('li');
 										file.className = 'file';
@@ -556,27 +514,19 @@ function setupFileCreation() {
 									    <input id="accedibutton" type="button" class="accedi" value="ACCEDI" data-tokenf="${x.responseText.trim()}">
 										`;
 
-console.log("Creazione file:", file); // Debug del nuovo elemento `li`
-
-
 										// Aggiungi manualmente gli event listeners ai miei bottoni nuovi
 										const accediButton = file.querySelector('.accedi'); // bottone appena creato sopra
 
 										if(accediButton){
 											accediButton.addEventListener('click', function() {
-											console.log("Pulsante cliccato:", this); // Verifica che il clic venga registrato
-							
 											// Recupera il valore dell'attributo data-token
 											const token = this.getAttribute('data-tokenf');
-											console.log("Token:", token); // Verifica che il token venga letto
-							
 											// Effettua una chiamata GET usando la funzione makeCall
 											makeCall("GET", 'AccediServlet?fileToken=' + token,
 												function(x) {
 													if (x.readyState == XMLHttpRequest.DONE) {
 														if (x.status === 200) { // OK
 															// Convertiamo la risposta JSON in un oggetto JavaScript
-															console.log(x.responseText); // Debug della risposta
 															const risposta = JSON.parse(x.responseText);
 															document.getElementById("nomedocumento").textContent = risposta.nomedocumento;
 															document.getElementById("email").textContent = risposta.email;
@@ -596,22 +546,11 @@ console.log("Creazione file:", file); // Debug del nuovo elemento `li`
 									// appendiamo il file con il relativo bottone alla lista del subfolder più vicino
 									const parentFolderElement = clickedButton.closest('.folder'); // Trova la cartella più vicina
 										let list = parentFolderElement.querySelector('ul'); // Trova la lista interna	
-										console.log("Lista trovata:", list); // Verifica se la lista esiste
-										console.log("Lista trovata:", list); // Verifica se la lista esiste
-										
 										if (!list){
 												list = document.createElement('ul');		
 												parentFolderElement.appendChild(list); // Aggiungi la nuova lista al parentFolderElement
 										}
-										console.log("sto appendendo file");
 										list.appendChild(file);
-									
-									
-									
-									
-									
-									
-									
 									
 								} else {
 									alert("C'è stato un errore del server durante la creazione del file");
@@ -627,8 +566,6 @@ console.log("Creazione file:", file); // Debug del nuovo elemento `li`
 					input2.remove();
 					input3.remove();
 					confermaButton.remove();
-
-
 				});
 			});
 		});
@@ -698,7 +635,6 @@ function setupFolderCreation() {
 									const addFileButton = subfolder.querySelector('.addfile');
 
 								
-
 									if (addFileButton) {
 										addFileButton.addEventListener('click', function(event) {
 														
@@ -706,8 +642,7 @@ function setupFolderCreation() {
 
 														// Recupera il valore dell'attributo data-token (token della CARTELLA)
 														const token = this.getAttribute('data-token');
-														console.log("Token:", token); // Verifica che il token venga letto
-
+								
 														// Se il campo di input esiste già, non fare nulla
 														const formBox = document.getElementById('form-box1');
 														// Controlla se il form box contiene già elementi
@@ -770,8 +705,6 @@ function setupFolderCreation() {
 																function(x) {
 																	if (x.readyState == XMLHttpRequest.DONE) {
 																		if (x.status === 200) { // OK
-																			console.log('File creato correttamente!!');
-																			
 																			// appendiamo dinamicamente il file alla lista della cartella
 																				const file = document.createElement('li');
 																				file.className = 'file';
@@ -783,27 +716,19 @@ function setupFolderCreation() {
 																			    <input id="accedibutton" type="button" class="accedi" value="ACCEDI" data-tokenf="${x.responseText.trim()}">
 																				`;
 
-										console.log("Creazione file:", file); // Debug del nuovo elemento `li`
-
-
 																				// Aggiungi manualmente gli event listeners ai miei bottoni nuovi
 																				const accediButton = file.querySelector('.accedi'); // bottone appena creato sopra
 
 																				if(accediButton){
 																					accediButton.addEventListener('click', function() {
-																					console.log("Pulsante cliccato:", this); // Verifica che il clic venga registrato
-																	
 																					// Recupera il valore dell'attributo data-token
 																					const token = this.getAttribute('data-tokenf');
-																					console.log("Token:", token); // Verifica che il token venga letto
-																	
 																					// Effettua una chiamata GET usando la funzione makeCall
 																					makeCall("GET", 'AccediServlet?fileToken=' + token,
 																						function(x) {
 																							if (x.readyState == XMLHttpRequest.DONE) {
 																								if (x.status === 200) { // OK
 																									// Convertiamo la risposta JSON in un oggetto JavaScript
-																									console.log(x.responseText); // Debug della risposta
 																									const risposta = JSON.parse(x.responseText);
 																									document.getElementById("nomedocumento").textContent = risposta.nomedocumento;
 																									document.getElementById("email").textContent = risposta.email;
@@ -823,22 +748,11 @@ function setupFolderCreation() {
 																			// appendiamo il file con il relativo bottone alla lista del subfolder più vicino
 																			const parentFolderElement = clickedButton.closest('.folder'); // Trova la cartella più vicina
 																				let list = parentFolderElement.querySelector('ul'); // Trova la lista interna	
-																				console.log("Lista trovata:", list); // Verifica se la lista esiste
-																				console.log("Lista trovata:", list); // Verifica se la lista esiste
-																				
 																				if (!list){
 																						list = document.createElement('ul');		
 																						parentFolderElement.appendChild(list); // Aggiungi la nuova lista al parentFolderElement
 																				}
-																				console.log("sto appendendo file");
 																				list.appendChild(file);
-																			
-																			
-																			
-																			
-																			
-																			
-																			
 																			
 																		} else {
 																			alert("C'è stato un errore del server durante la creazione del file");
@@ -923,10 +837,6 @@ function setupFolderCreation() {
 													// Aggiorna l'interfaccia utente per riflettere lo spostamento SENZA ricaricare la pagina
 													const draggedElement = document.querySelector(`[data-token="${sourceToken}"]`);
 													const targetElement = folderElement; // deve essere la cartella in cui ho rilasciato il file
-													console.log('draggedElement:', draggedElement);
-													console.log('targetElement:', targetElement);
-
-
 													// Rimuovi l'elemento dalla posizione precedente
 													if (draggedElement.parentNode) { // tolgo il file dalla lista
 														draggedElement.parentNode.removeChild(draggedElement);
@@ -934,7 +844,6 @@ function setupFolderCreation() {
 
 													// Aggiungi l'elemento alla nuova cartella
 													let targetList = targetElement.querySelector('ul');
-													console.log('TARGET LIST:', targetList);
 
 													if (!targetList) { // se la cartella non ha figli (è il nuovo elemento)
 														targetList = document.createElement('ul');
@@ -955,7 +864,6 @@ function setupFolderCreation() {
 									input1.remove();
 									confermaButton.remove();
 
-									console.log('Cartella root creata correttamente');
 								} else {
 									alert("C'è stato un errore del server durante la creazione della cartella Root");
 									return;
@@ -1055,9 +963,6 @@ function setupDraggableItems() {
 						// Aggiorna l'interfaccia utente per riflettere lo spostamento SENZA ricaricare la pagina
 						const draggedElement = document.querySelector(`[data-token="${sourceToken}"]`);
 						const targetElement = folderElement; // deve essere la cartella in cui ho rilasciato il file
-						console.log('draggedElement:', draggedElement);
-						console.log('targetElement:', targetElement);
-
 
 						// Rimuovi l'elemento dalla posizione precedente
 						if (draggedElement.parentNode) { // tolgo il file dalla lista
@@ -1066,7 +971,6 @@ function setupDraggableItems() {
 
 						// Aggiungi l'elemento alla nuova cartella
 						let targetList = targetElement.querySelector('ul');
-						console.log('TARGET LIST:', targetList);
 
 						if (!targetList) { // se la cartella non ha figli (è il nuovo elemento)
 							targetList = document.createElement('ul');
@@ -1095,7 +999,6 @@ function setupDraggableItems() {
 			}
 
 			const elementoTrascinato = document.querySelector(`[data-token="${sourceToken}"]`);
-			console.log("IL SOURSE TOKEN è" + sourceToken);
 
 			if (elementoTrascinato) {
 				const conferma = confirm(`Stai eliminando: \n${elementoTrascinato.textContent.split('\n').map(line => line.trim()).filter(line => line !== "").join("\n")} \nSei sicuro di voler proseguire?`);
@@ -1126,14 +1029,13 @@ function setupDraggableItems() {
 // chiamata istantanea quando carico il file JS
 
 // Assicurati che il DOM sia caricato prima di chiamare setupEventDelegation
+// Solamente quando l'HTML è caricato (DOM Document Object Model)
+// prendo tutti gli elementi accedibutton e ci aggiungo un event listener
 document.addEventListener('DOMContentLoaded', function() {
-	    console.log('DOM completamente caricato e analizzato.');
-
-    setupFileCreation();
+setupFileCreation();
 setupDraggableItems();
 setupAccediButtons();
 setupFolderCreation();
 setupEventDelegation();
 setupCloseButton();
-console.log('fine esecuzione');
 });

@@ -1,7 +1,6 @@
 
 
 (function() {
-
 	// prendo l'elemento loginbutton e ci aggiunto un event listener che in base al click manda 
 	// i risultati con un metodo POST (tramite MakeCall) a LoginServlet
 	document.getElementById("loginbutton").addEventListener('click', (e) => {
@@ -31,6 +30,7 @@
 			);
 		} else {
 			form.reportValidity(); // controllo di validità dei dati inseriti nei campi del form
+			// se i campi fillati non sono validi, allora mostra un messaggio predefinito
 		}
 	});
 
@@ -55,7 +55,7 @@ function makeCall(method, url, formElement, cback, reset = true) {
 		}
 	};
 
-	req.open(method, url); // post, loginservlet
+	req.open(method, url); // in questo caso: post, loginservlet
 
 	if (formElement == null) {
 		req.send();
@@ -66,7 +66,7 @@ function makeCall(method, url, formElement, cback, reset = true) {
 	}
 
 	if (formElement !== null && reset === true) {
-		formElement.reset();
+		formElement.reset(); // cancello i campi dagli input
 	}
 }
 
