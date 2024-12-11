@@ -1,8 +1,6 @@
 package com.example.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Date;
 import com.google.gson.JsonObject;

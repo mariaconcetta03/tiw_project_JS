@@ -694,75 +694,10 @@ function setupFolderCreation() {
                                         <input id="aggiungifilebutton" class="addfile" type="button" value="AGGIUNGI FILE" data-token="${x.responseText.trim()}">`; // tolgo A CAPO
 
 									// Aggiungi manualmente gli event listeners ai miei bottoni nuovi
-									const addSubfolderButton = subfolder.querySelector('.addsubfolder');
+									// NON aggiungiamo event listener ad "addSubfolderButton" perchè è gestito tramite event delegation
 									const addFileButton = subfolder.querySelector('.addfile');
 
-									if (addSubfolderButton) {
-										addSubfolderButton.addEventListener('click', function() {
-
-											// Recupera il valore dell'attributo data-token (token della CARTELLA)
-											const token = this.getAttribute('data-token');
-											console.log("Token:", token); // Verifica che il token venga letto
-
-											// Se il campo di input esiste già, non fare nulla
-											const formBox = document.getElementById('form-box1');
-											// Controlla se il form box contiene già elementi
-											if (formBox && formBox.children.length > 0) {
-												return; // Esci se il form box contiene elementi
-											}
-
-											// Crea il campo di input per far inserire all'utente il nome della sottocartella
-											const input = document.createElement('input');
-											const contenitore1 = document.getElementById('form-box1');
-											const contenitore2 = document.getElementById('form-box2');
-
-
-											input.type = 'text';
-											input.placeholder = 'Nome sottocartella';
-
-											// Crea un pulsante per confermare l'aggiunta della sottocartella
-											const confermaButton = document.createElement('button');
-											confermaButton.textContent = 'CREA';
-
-											// Aggiungi l'input e il pulsante nel FORM BOX sotto
-											contenitore1.appendChild(input);
-											contenitore2.appendChild(confermaButton);
-
-
-											// Event listener per il pulsante di conferma
-											confermaButton.addEventListener('click', () => {
-												const nomeSottocartella = input.value.trim(); // prendo il nome inserito dall'utente
-												// TRIM: rimuovo gli spazi ad inizio e fine testo, e anche il terminatore di stringa
-
-												// se l'utente non inserisce un nome
-												if (nomeSottocartella === '') {
-													alert('Inserisci un nome valido per la sottocartella!');
-													return;
-												}
-
-
-												makeCall("POST", 'NewSubfolderServlet?folderToken=' + token + '&nome=' + nomeSottocartella,
-													function(x) {
-														if (x.readyState == XMLHttpRequest.DONE) {
-															if (x.status === 200) { // OK
-																console.log('Cartella creata correttamente');
-															} else {
-																alert("C'è stato un errore del server durante la creazione della cartella");
-																return;
-															}
-														}
-													}
-												);
-
-
-												// Rimuovi il campo di input e il bottone di conferma
-												input.remove();
-												confermaButton.remove();
-
-												
-											});
-										});
-									}
+								
 
 									if (addFileButton) {
 										addFileButton.addEventListener('click', function(event) {
