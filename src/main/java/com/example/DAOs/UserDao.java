@@ -112,7 +112,6 @@ public class UserDao {
 
 		} catch (SQLException e) {
 			if (e.getSQLState().equals("23000")) { // Codice di errore SQL per violazione di vincolo
-				System.out.println("Username o e-mail già esistente.");
 				value.add(0); // unique
 				value.add(0); // connectionError
 			} else {
