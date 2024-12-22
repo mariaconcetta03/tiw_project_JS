@@ -37,10 +37,12 @@ public class DeleteServlet extends HttpServlet {
 		Integer idToDelete = null;
 		Boolean isFile = false;
 		HttpSession session = request.getSession();
+		String user = null; 
 		
 		if (session != null) {
 			folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
 			fileTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
+			user = session.getAttribute("email").toString();
 		}
 		
         if (token == null) {
@@ -56,9 +58,9 @@ public class DeleteServlet extends HttpServlet {
 	   }
 	   
 	   if (isFile) {
-		   documentoDao.deleteDocumento(idToDelete);
+		   documentoDao.deleteDocumento(user, idToDelete);
 	   } else {
-		   cartellaDao.deleteCartella(idToDelete);
+		   cartellaDao.deleteCartella(user, idToDelete);
 	   }
 }
 }

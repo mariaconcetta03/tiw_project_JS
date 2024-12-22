@@ -18,13 +18,11 @@ import com.example.DAOs.*;
 public class NewFileServlet extends HttpServlet {
 
 	DocumentoDao documentoDao = null;
-	CartellaDao cartellaDao = null;
-
+	
 	// questa funzione viene eseguita solo una volta quando la servlet viene caricata in memoria
 	@Override
 	public void init() {
 		documentoDao = new DocumentoDao();
-		cartellaDao = new CartellaDao();
 	}
 
 	// metodo che viene chiamato nel momento in cui l'utente ha finito di inserire i dati nel form HTML

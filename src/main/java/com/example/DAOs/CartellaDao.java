@@ -35,14 +35,16 @@ public class CartellaDao {
 	}
 
 	// Questo metodo cancella la cartella dal DB
-	public void deleteCartella(Integer idToDelete) {
+	public void deleteCartella(String user, Integer idToDelete) {
 		getConnection();
 		PreparedStatement preparedStatement = null; // PreparedStatement per evitare sql injection
-		String sql = "DELETE FROM cartella WHERE id = ?";
+		String sql = "DELETE FROM cartella WHERE id = ? and proprietario = ?";
 
 		try {
 			preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setInt(1, idToDelete);
+			preparedStatement.setString(2, user);
+			
 			preparedStatement.executeUpdate(); // Cancelliamo l'elemento dalla tabella
 		} catch (SQLException e) {
 			System.out.println("Impossibile eseguire la query SQL");
@@ -59,17 +61,18 @@ public class CartellaDao {
 	}
 
 	// Questo metodo ritorna il nome di una cartella dato il suo ID
-	public String getNomeCartellaById(Integer idCartella) {
+	public String getNomeCartellaById(String user, Integer idCartella) {
 		String nomeCartella = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		getConnection();
 
-		String sql1 = "SELECT nome FROM cartella WHERE id = ?";
+		String sql1 = "SELECT nome FROM cartella WHERE id = ? and proprietario = ?";
 
 		try {
 			preparedStatement = connection.prepareStatement(sql1);
 			preparedStatement.setInt(1, idCartella);
+			preparedStatement.setString(2, user);
 
 			resultSet = preparedStatement.executeQuery(); // riceviamo il risultato della query SQL
 
@@ -106,12 +109,13 @@ public class CartellaDao {
 		ResultSet resultSet = null;
 
 		// prepared statements per evitare SQL-Injection
-		String sql = "SELECT * FROM cartella WHERE sopracartella = ?";
+		String sql = "SELECT * FROM cartella WHERE sopracartella = ? and proprietario = ?";
 
 		try {
 			preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setInt(1, cartella);
-
+			preparedStatement.setString(2, user);
+			
 			// riceviamo il risultato della query SQL
 			resultSet = preparedStatement.executeQuery();
 
