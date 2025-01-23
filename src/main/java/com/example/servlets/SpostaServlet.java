@@ -31,10 +31,12 @@ public class SpostaServlet extends HttpServlet {
 		String folderToken = null;
 		Map<String, Integer> folderTokens = null; // nome del folder in cui ci spostiamo
 		Map<String, Integer> fileTokens = null; // nome del file spostato
-
+		String user = null;
+		
 		if (session != null){
 		folderTokens = (Map<String, Integer>) session.getAttribute("folderTokens");
 		fileTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
+		user = session.getAttribute("email").toString();
 		}
 		
 		fileToken = request.getParameter("sourceToken");
@@ -43,7 +45,7 @@ public class SpostaServlet extends HttpServlet {
 		Integer fileID = fileTokens.get(fileToken);
 		Integer newFolderID = folderTokens.get(folderToken);
 	
-		documentoDao.updateFilePosition(newFolderID, fileID);
+		documentoDao.updateFilePosition(user, newFolderID, fileID);
 	
 	}
 	

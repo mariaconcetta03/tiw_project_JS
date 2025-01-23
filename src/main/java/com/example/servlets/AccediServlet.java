@@ -48,14 +48,16 @@ public class AccediServlet extends HttpServlet {
 		String tipo = null;
 		String nomedocumento = null;
 		Integer fileId = null;
-
+		String user = null;
+		
 		HttpSession session = request.getSession(); 
 
 		response.setContentType("application/json"); // (per file) settando il tipo di risposta a JSON passiamo il file con tutti i relativi dettagli
 		response.setCharacterEncoding("UTF-8");
-
+		
 		if (session != null) {
 			fileTokens = (Map<String, Integer>) session.getAttribute("fileTokens");
+			user = session.getAttribute("email").toString();
 		}
 
 		// prendo dall'URL il token del file selezionato
@@ -65,10 +67,10 @@ public class AccediServlet extends HttpServlet {
 			fileId = fileTokens.get(fileToken); // ID della cartella
 		}
 
-		f = documentoDao.findDocumentoByID(fileId);
+		f = documentoDao.findDocumentoByID(user, fileId);
 
 		// settiamo tutti gli attributi da mettere nel JSON file
-		nomecartella = cartellaDao.getNomeCartellaById(f.getCartella());
+		nomecartella = cartellaDao.getNomeCartellaById(user, f.getCartella());
 		email = f.getProprietario();
 		data = f.getData_creazione();
 		sommario = f.getSommario();
