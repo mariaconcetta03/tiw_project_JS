@@ -39,6 +39,12 @@ public class RegistrationServlet extends HttpServlet {
 		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		String confirmPassword = StringEscapeUtils.escapeJava(request.getParameter("password_conf"));
 
+		if (!password.equals(confirmPassword)) { // se non coincidono
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Status 400
+			response.getWriter().println("Le due password non coincidono. Riprova");
+			return; // non provo a mettere nulla nel database
+		}
+		
 		// controllo se username ed e-mail sono unici o no
 		List<Integer> value = userDao.insertUser(username, password, email);
 		boolean unique, connectionError;
