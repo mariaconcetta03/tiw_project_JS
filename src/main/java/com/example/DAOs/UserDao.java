@@ -43,6 +43,8 @@ public class UserDao {
 
 		if (connection != null) { // se non è avvenuto l'errore di connessione
 			value.add(0);
+		} else {
+			value.add(1);
 		}
 
 		// prepariamo la query SQL

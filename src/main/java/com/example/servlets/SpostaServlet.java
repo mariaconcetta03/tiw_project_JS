@@ -39,8 +39,8 @@ public class SpostaServlet extends HttpServlet {
 		user = session.getAttribute("email").toString();
 		}
 		
-		fileToken = request.getParameter("sourceToken");
-		folderToken = request.getParameter("targetToken");
+		fileToken = request.getParameter("sourceToken"); //sourcetoken = file da spostare
+		folderToken = request.getParameter("targetToken"); //targettoken = cartella di destinazione
 			
 		Integer fileID = fileTokens.get(fileToken);
 		Integer newFolderID = folderTokens.get(folderToken);

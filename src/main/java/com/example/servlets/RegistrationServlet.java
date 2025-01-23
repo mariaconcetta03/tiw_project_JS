@@ -98,7 +98,6 @@ public class RegistrationServlet extends HttpServlet {
 						session.setAttribute("email", email); // Salviamo l'email nella sessione, perchè è quella del PROPRIETARIO delle cartelle
 															
 						response.setStatus(HttpServletResponse.SC_OK); // Status 200 OK
-						response.setCharacterEncoding("UTF-8");
 						response.getWriter().println(email);
 					}
 				}

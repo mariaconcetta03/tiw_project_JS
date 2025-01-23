@@ -57,11 +57,11 @@ function makeCall(method, url, formElement, cback, reset = true) {
 
 	req.open(method, url); // in questo caso: post, loginservlet
 
-	if (formElement == null) {
+	if (formElement == null) { //se ho form vuoto/non esiste
 		req.send();
 	} else {
 		const formData = new URLSearchParams(new FormData(formElement)).toString();
-		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); //contenuto richiesta è form
 		req.send(formData); // invio i dati
 	}
 

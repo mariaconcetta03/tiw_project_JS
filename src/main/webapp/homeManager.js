@@ -86,7 +86,7 @@ function setupCloseButton() {
 function setupEventDelegation() {
 	document.getElementById('outerlist').addEventListener('click', function(event) {
 		if (event.target && event.target.classList.contains('addsubfolder')) {
-			handleSubfolderCreation(event.target);
+			handleSubfolderCreation(event.target); //event.target == button
 		}
 	});
 }
@@ -108,8 +108,8 @@ function handleSubfolderCreation(button) {
 
 	// Crea il campo di input per far inserire all'utente il nome della sottocartella
 	const input = document.createElement('input');
-	const contenitore1 = document.getElementById('form-box1');
-	const contenitore2 = document.getElementById('form-box2');
+	const contenitore1 = document.getElementById('form-box1'); //contiene input
+	const contenitore2 = document.getElementById('form-box2'); //contiene crea
 
 	input.type = 'text';
 	input.placeholder = 'Nome sottocartella';
@@ -970,7 +970,6 @@ function setupDraggableItems() {
 
 // CHIAMATA ISTANTANEA QUANDO CARICO IL FILE JS
 // Queste funzioni vengono chiamate istantaneamente per configurare i bottoni
-// Assicurati che il DOM sia caricato prima di chiamare setupEventDelegation
 // Solamente quando l'HTML è caricato (DOM Document Object Model)
 document.addEventListener('DOMContentLoaded', function() {
 	setupFileCreation();

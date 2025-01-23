@@ -22,7 +22,7 @@ import com.example.beans.*;
 /*
 ------------------  FUNZIONAMENTO DEL CESTINO  --------------------
 	
-1. Quando l'utente traina un file -> elimino il file
+1. Quando l'utente trascina un file -> elimino il file
 
 2. Quando l'utente trascina una cartella, allora vengono eliminati
 	automaticamente tutti i files contenuti in quella cartella, grazie

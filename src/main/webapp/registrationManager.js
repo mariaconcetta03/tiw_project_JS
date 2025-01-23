@@ -67,9 +67,9 @@ function makeCall(method, url, formElement, cback, reset = true) {
 		}
 	};
 
-	req.open(method, url); // iqun esto caso: post, RegistrationServlet
+	req.open(method, url); // in questo caso: post, RegistrationServlet
 
-	if (formElement == null) {
+	if (formElement == null) { //caso premo bottone senza aver inserito dati/non esiste form
 		req.send();
 	} else {
 		const formData = new URLSearchParams(new FormData(formElement)).toString();
